@@ -1,0 +1,19 @@
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+[user]
+    name = Zerebos
+    email = me@zerebos.com
+    signingkey = ~/.ssh/id_rsa.pub
+[gpg]
+    format = ssh
+[commit]
+    gpgsign = true
+[tag]
+    gpgsign = true
+[credential "https://git.zerebos.com"]
+    provider = generic
+[init]
+    defaultBranch = main

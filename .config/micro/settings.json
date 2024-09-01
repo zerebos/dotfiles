@@ -1,0 +1,11 @@
+{
+    "basename": true,
+    "colorscheme": "vscode",
+    "hltaberrors": true,
+    "lsp.server": "python=pylsp,go=gopls,typescript=deno lsp,javascript=deno lsp,markdown=deno lsp,json=deno lsp,jsonc=deno lsp,rust=rust-analyzer,lua=lua-lsp,c++=clangd",
+    "mkparents": true,
+    "saveundo": true,
+    "tabhighlight": true,
+    "tabreverse": false,
+    "tabstospaces": true
+}
