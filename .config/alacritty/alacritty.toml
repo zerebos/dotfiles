@@ -1,0 +1,8 @@
+#[window]
+#decorations = "Transparent"
+
+
+[font]
+normal.family = "MesloLGS Nerd Font"
+size = 13.5
+

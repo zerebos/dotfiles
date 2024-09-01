@@ -1,0 +1,5 @@
+# install brew
+# install kickstart.nvim
+# install plugins for yazi, micro
+# yazi: ya pack -a dangooddd/kanagawa
+# micro: micro -plugin add

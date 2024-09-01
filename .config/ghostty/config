@@ -1,0 +1,37 @@
+macos-titlebar-style = tabs
+macos-option-as-alt = true
+font-family = JetBrainsMono Nerd Font 
+font-size = 13.5
+#theme = Brogrammer
+background = #181818
+foreground = #d8d8d8
+selection-invert-fg-bg = true
+#adjust-cell-width = 20%
+#grapheme-width-method = legacy
+
+window-padding-x = 15
+window-padding-y = 10
+window-padding-balance = true
+
+palette = 0=#181818
+palette = 1=#AC4242
+palette = 2=#90A959
+palette = 3=#F4BF75
+palette = 4=#6A9FB5
+palette = 5=#AA759F
+palette = 6=#75B5AA
+palette = 7=#d8d8d8
+palette = 8=#6b6b6b
+palette = 9=#C55555
+palette = 10=#AAC474
+palette = 11=#FECA88
+palette = 12=#82B8C8
+palette = 13=#C28CB8
+palette = 14=#93D3C3
+palette = 15=#f8f8f8
+
+#keybind = home=text:\x01
+#keybind = end=text:\x05
+
+
+unfocused-split-opacity = 1

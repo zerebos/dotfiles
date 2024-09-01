@@ -1,0 +1,2 @@
+[manager]
+syntect_theme = "~/.config/yazi/vscode.tmTheme"

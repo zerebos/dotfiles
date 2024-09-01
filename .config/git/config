@@ -17,3 +17,7 @@
     provider = generic
 [init]
     defaultBranch = main
+[core]
+    excludesFile = ~/.config/git/ignore
+[includeIf "gitdir:GitHub@IBM/"]
+    path = config-ibm

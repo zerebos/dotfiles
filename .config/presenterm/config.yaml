@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mfontanini/presenterm/master/config-file-schema.json
+options:
+  implicit_slide_ends: true
+defaults:
+  image_protocol: kitty-local
+  theme: terminal-dark
+bindings:
+  exit: ["<c-c>", "q"]
+snippet:
+  exec:
+    enable: true

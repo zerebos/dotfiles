@@ -5,5 +5,7 @@
     "Alt-k": "command:hover",
     "Alt-r": "command:references",
     "CtrlSpace": "command:lspcompletion",
-    "CtrlUnderscore": "lua:comment.comment"
+    "CtrlUnderscore": "lua:comment.comment",
+    "CtrlAltLeft": "PreviousTab",
+    "CtrlAltRight": "NextTab"
 }
