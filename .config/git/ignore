@@ -2,3 +2,6 @@
 .zed/
 .DS_Store
 .spacedrive
+node_modules
+Desktop.ini
+Thumbs.db

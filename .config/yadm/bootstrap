@@ -1,5 +1,25 @@
+#!/usr/bin/bash
 # install brew
 # install kickstart.nvim
 # install plugins for yazi, micro
 # yazi: ya pack -a dangooddd/kanagawa
 # micro: micro -plugin add
+# if [ "$system_type" = "Darwin" ]; then
+#   echo "Running Darwin specific steps:"
+#   # install homebrew if it's missing
+#   if ! command -v brew >/dev/null 2>&1; then
+#     echo "Installing homebrew"
+#     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+#     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+#   fi
+# 
+#   if [ -f "$HOME/.Brewfile" ]; then
+#     echo "Updating homebrew bundle"
+#     brew bundle --global
+#   fi
+# echo "Updating the yadm repo origin URL to use SSH"
+# yadm remote set-url origin "git@github.com:duckfullstop/dotfiles.git"
+    # if [ -d "$HOME/.config/iterm2" ]; then
+    #     echo "Setting iTerm preference folder"
+    #     defaults write com.googlecode.iterm2 PrefsCustomFolder "$HOME/.config/iterm2"
+    # fi

@@ -124,6 +124,7 @@ export PATH=$BUN_INSTALL/bin:$PATH
 export MICRO_TRUECOLOR=1
 export EDITOR="micro"
 export PATH=$PATH:/home/zack/bin
+export PATH=$PATH:/home/zack/.local/bin
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 eval "$(fzf --bash)"
