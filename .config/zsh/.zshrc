@@ -1,3 +1,11 @@
+if [ -d "/opt/homebrew" ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+if [ -d "/home/linuxbrew" ]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
 fpath+=("$(brew --prefix)/share/zsh/site-functions")
 
 
@@ -39,7 +47,7 @@ ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 # Load plugins.
 source $ZDOTDIR/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 source $ZDOTDIR/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+source "$(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme"
 # To customize prompt, run `p10k configure` or edit $ZDOTDIR/p10k.zsh.
 [[ ! -f $ZDOTDIR/p10k.zsh ]] || source $ZDOTDIR/p10k.zsh
 
@@ -64,6 +72,7 @@ export MICRO_TRUECOLOR=1
 
 bindkey  "^[[H"   beginning-of-line
 bindkey  "^[[F"   end-of-line
+bindkey  "^[[3~"  delete-char
 
 
 export DISABLE_AUTO_TITLE="false"
