@@ -3,7 +3,7 @@ alias cat="bat"
 alias less="bat"
 alias cd="z"
 alias presenterm="presenterm --image-protocol=kitty-local"
-alias nano="micro"
+alias nano="flow"
 
 alias ll="ls -lh"
 alias la="ls -ah"
@@ -24,7 +24,6 @@ alias gs="git status"
 alias ga="git add"
 alias gp="git pull"
 
-#alias chist='git log --pretty=format:"%ci %h: %an (%cn): %s"'
 alias chist='git log --pretty=format:"%Cblue%ci %Creset| %Cgreen%h %Creset| %Cred%an (%cn) %Creset| %s %s"'
 alias glog="git log"
 alias glogo="git log --oneline"
@@ -34,3 +33,8 @@ function mkcd(){
   mkdir -p "$1";
   cd "$1";
 }
+
+# Load local custom aliases from separate file
+if [ -f $ZDOTDIR/aliases.local.zsh ]; then
+    . $ZDOTDIR/aliases.local.zsh
+fi

@@ -1,1 +1,1 @@
-/home/zack/.config/zsh/.zshenv
+.config/zsh/.zshenv

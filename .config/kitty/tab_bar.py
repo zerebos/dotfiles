@@ -31,7 +31,7 @@ def draw_tab(
     # Truncate the title if it's too long
     if title_length + 1 > max_tab_length:
         screen.cursor.x = before + max_tab_length - 1
-        screen.draw('‚Ä¶ ')
+        screen.draw('… ')
     else:
         # Draw trailing spaces
         if is_last:

@@ -70,8 +70,7 @@ SAVEHIST=10000
 setopt SHARE_HISTORY
 
 export PATH=$PATH:~/bin:~/.local/bin
-export EDITOR="micro"
-export PAGER="bat"
+export EDITOR="flow"
 export MICRO_TRUECOLOR=1
 
 
