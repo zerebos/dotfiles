@@ -23,3 +23,9 @@
     #     echo "Setting iTerm preference folder"
     #     defaults write com.googlecode.iterm2 PrefsCustomFolder "$HOME/.config/iterm2"
     # fi
+# ya pack -a yazi-rs/plugins:max-preview
+# ya pack -a yazi-rs/plugins:full-border
+# ya pack -a yazi-rs/plugins:git
+# ya pack -a KKV9/command
+# ya pack -a imsi32/yatline
+# ya pack -a imsi32/yatline-githead

@@ -64,7 +64,12 @@ if [ -f $ZDOTDIR/aliases.zsh ]; then
     . $ZDOTDIR/aliases.zsh
 fi
 
-export PATH="$PATH:/Users/zack/bin"
+HISTFILE=$ZDOTDIR/history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt SHARE_HISTORY
+
+export PATH=$PATH:~/bin:~/.local/bin
 export EDITOR="micro"
 export PAGER="bat"
 export MICRO_TRUECOLOR=1
