@@ -57,7 +57,8 @@ fpath+=("$(brew --prefix)/share/zsh/site-functions")
 
 # eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
-
+eval "$(direnv hook zsh)"
+eval "$(fzf --zsh)"
 
 # Load custom aliases from separate file
 if [ -f $ZDOTDIR/aliases.zsh ]; then
@@ -72,7 +73,7 @@ setopt SHARE_HISTORY
 export PATH=$PATH:~/bin:~/.local/bin
 export EDITOR="flow"
 export MICRO_TRUECOLOR=1
-
+export DIRENV_LOG_FORMAT=''
 
 bindkey  "^[[H"   beginning-of-line
 bindkey  "^[[F"   end-of-line

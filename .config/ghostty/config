@@ -1,6 +1,6 @@
 macos-titlebar-style = tabs
 macos-option-as-alt = true
-font-family = JetBrainsMono Nerd Font 
+font-family = JetBrainsMono Nerd Font
 font-size = 13.5
 #theme = Brogrammer
 background = #181818
@@ -12,6 +12,7 @@ selection-invert-fg-bg = true
 window-padding-x = 15
 window-padding-y = 10
 window-padding-balance = true
+window-padding-color = background
 
 palette = 0=#181818
 palette = 1=#AC4242
