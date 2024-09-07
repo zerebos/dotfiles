@@ -1,24 +1,73 @@
-alias ls="eza --icons --color=always --hyperlink"
-alias cat="bat"
-alias less="bat"
-alias cd="z"
-alias presenterm="presenterm --image-protocol=kitty-local"
-alias nano="flow"
-
+# ======== #
+# FILE OPS #
+# ======== #
 alias ll="ls -lh"
 alias la="ls -ah"
+alias ld="ll --only-dirs"
 alias lla="ls -lah"
-alias ld="ll --only-dirs --ignore-glob go"
+
+# If eza is installed, use that instead of ls
+if command -v eza &> /dev/null; then
+  alias ls="eza -h --icons --color=always --hyperlink"
+else
+  alias ls="ls -h --color=always --hyperlink"
+fi
+
+# Set nano to whatever editor is
+alias nano="${EDITOR:-nano}"
+
+# Alias for yazi to cd into dir on exit
+function yy() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
+# Use ripgrep to find in files but pipe to fzf
+fif() {
+  if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
+  rg --files-with-matches --no-messages "$1" | fzf --preview "highlight -O ansi -l {} 2> /dev/null | rg --colors 'match:bg:yellow' --ignore-case --pretty --context 10 '$1' || rg --ignore-case --pretty --context 10 '$1' {}"
+}
+
+# Replace cat and less with calls to bat
+if command -v bat &> /dev/null; then
+  alias cat="bat"
+  alias less="bat"
+fi
+
+# Add some nice defaults for some commands
+alias presenterm="presenterm --image-protocol=kitty-local"
+alias search="find . -name "
+alias grep="grep --color=auto"
+
+
+
+
+# ============= #
+# DIRECTORY OPS #
+# ============= #
 alias cd..="cd .."
 alias ..="cd .."
-alias search="find . -name "
 alias mkdir="mkdir -pv"
-#alias rm="rm -i"
-alias grep="grep --color=auto"
-alias hs="history | grep"
-alias python="python3"
+
+function mkcd(){
+  mkdir -p "$1";
+  cd "$1";
+}
+
+if command -v zoxide &> /dev/null; then
+  alias cd="z"
+fi
 
 
+
+
+# ============= #
+# GIT SHORTCUTS #
+# ============= #
 alias g="git"
 alias gs="git status"
 alias ga="git add"
@@ -29,22 +78,15 @@ alias glog="git log"
 alias glogo="git log --oneline"
 alias gstatus="git status"
 
-function mkcd(){
-  mkdir -p "$1";
-  cd "$1";
-}
+
+
+
+# ===== #
+# OTHER #
+# ===== #
 
 # Load local custom aliases from separate file
+# Mostly used for work PCs with private stuff
 if [ -f $ZDOTDIR/aliases.local.zsh ]; then
     . $ZDOTDIR/aliases.local.zsh
 fi
-
-
-function yy() {
-    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-    yazi "$@" --cwd-file="$tmp"
-    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-	    builtin cd -- "$cwd"
-    fi
-    rm -f -- "$tmp"
-}

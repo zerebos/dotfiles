@@ -79,9 +79,9 @@ if [[ ! -d $XDG_DATA_HOME/zsh ]]; then
 fi
 
 # Setup zsh history
-HISTFILE=$XDG_DATA_HOME/test/jst
-HISTSIZE=10000
-SAVEHIST=10000
+export HISTFILE=$XDG_DATA_HOME/zsh/history
+export HISTSIZE=10000
+export SAVEHIST=10000
 setopt SHARE_HISTORY
 
 # Setup important keybinds for consistency
