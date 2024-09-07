@@ -93,6 +93,16 @@ bindkey  "^[[3~"  delete-char       # DELETE
 [[ ":$PATH:" == *":$HOME/bin:"* ]] || export PATH=$PATH:~/bin
 [[ ":$PATH:" == *":$HOME/.local/bin:"* ]] || export PATH=$PATH:~/.local/bin
 
+# Setup some env vars
+if command -v flow &> /dev/null; then
+  export EDITOR="flow"
+elif command -v micro &> /dev/null; then
+  export EDITOR="micro"
+fi
+export MICRO_TRUECOLOR=1          # force truecolor for micro
+export DIRENV_LOG_FORMAT=''       # silence direnv output
+export DISABLE_AUTO_TITLE="false" # Ensure autotitle is enabled
+
 
 
 
@@ -109,16 +119,6 @@ bindkey  "^[[3~"  delete-char       # DELETE
 if [ -f $ZDOTDIR/aliases.zsh ]; then
     . $ZDOTDIR/aliases.zsh
 fi
-
-# Setup some env vars
-if command -v flow &> /dev/null; then
-  export EDITOR="flow"
-elif command -v micro &> /dev/null; then
-  export EDITOR="micro"
-fi
-export MICRO_TRUECOLOR=1          # force truecolor for micro
-export DIRENV_LOG_FORMAT=''       # silence direnv output
-export DISABLE_AUTO_TITLE="false" # Ensure autotitle is enabled
 
 
 
