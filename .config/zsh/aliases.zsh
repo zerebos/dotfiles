@@ -32,6 +32,15 @@ fif() {
   rg --files-with-matches --no-messages "$1" | fzf --preview "highlight -O ansi -l {} 2> /dev/null | rg --colors 'match:bg:yellow' --ignore-case --pretty --context 10 '$1' || rg --ignore-case --pretty --context 10 '$1' {}"
 }
 
+# Get a dataurl version of a file
+function dataurl() {
+	local mimeType=$(file -b --mime-type "$1");
+	if [[ $mimeType == text/* ]]; then
+		mimeType="${mimeType};charset=utf-8";
+	fi
+	echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')";
+}
+
 # Replace cat and less with calls to bat
 if command -v bat &> /dev/null; then
   alias cat="bat"
@@ -42,6 +51,9 @@ fi
 alias presenterm="presenterm --image-protocol=kitty-local"
 alias search="find . -name "
 alias grep="grep --color=auto"
+function tree() {
+	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less;
+}
 
 
 
@@ -84,6 +96,9 @@ alias gstatus="git status"
 # ===== #
 # OTHER #
 # ===== #
+
+# Print every path in $PATH on its own line
+alias path="echo -e ${PATH//:/\\n}"
 
 # Load local custom aliases from separate file
 # Mostly used for work PCs with private stuff
