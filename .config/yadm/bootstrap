@@ -1,31 +1,45 @@
-#!/usr/bin/bash
-# install brew
-# install kickstart.nvim
-# install plugins for yazi, micro
-# yazi: ya pack -a dangooddd/kanagawa
-# micro: micro -plugin add
+#!/usr/bin/env bash
+
+# TODO: maybe
+# - install kickstart.nvim
+# - install plugins for micro
+
+# Install homebrew if its missing
+if ! command -v brew &> /dev/null; then
+    echo "Installing homebrew"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+if [ -f "./Brewfile" ]; then
+    echo "Updating homebrew bundle"
+    brew bundle --file="./Brewfile"
+fi
+
+# If yazi was installed by brew then add the plugins too
+if command -v yazi &> /dev/null; then
+    echo "Adding plugins to yazi"
+    ya pack -a yazi-rs/plugins:max-preview
+    ya pack -a yazi-rs/plugins:full-border
+    ya pack -a yazi-rs/plugins:git
+    ya pack -a KKV9/command
+    ya pack -a imsi32/yatline
+    ya pack -a imsi32/yatline-githead
+fi
+
+# If eget was installed we can add custom binaries too
+if command -v eget &> /dev/null; then
+    eget grafviktor/goto
+fi
+
+
+# Do operating system specific actions
 # if [ "$system_type" = "Darwin" ]; then
 #   echo "Running Darwin specific steps:"
-#   # install homebrew if it's missing
-#   if ! command -v brew >/dev/null 2>&1; then
-#     echo "Installing homebrew"
-#     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-#     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-#   fi
-# 
-#   if [ -f "$HOME/.Brewfile" ]; then
-#     echo "Updating homebrew bundle"
-#     brew bundle --global
-#   fi
-# echo "Updating the yadm repo origin URL to use SSH"
-# yadm remote set-url origin "git@github.com:duckfullstop/dotfiles.git"
-    # if [ -d "$HOME/.config/iterm2" ]; then
-    #     echo "Setting iTerm preference folder"
-    #     defaults write com.googlecode.iterm2 PrefsCustomFolder "$HOME/.config/iterm2"
-    # fi
-# ya pack -a yazi-rs/plugins:max-preview
-# ya pack -a yazi-rs/plugins:full-border
-# ya pack -a yazi-rs/plugins:git
-# ya pack -a KKV9/command
-# ya pack -a imsi32/yatline
-# ya pack -a imsi32/yatline-githead
+
+# fi
+
+# Set terminal prefs
+# if [ -d "$HOME/.config/iterm2" ]; then
+#     echo "Setting iTerm preference folder"
+#     defaults write com.googlecode.iterm2 PrefsCustomFolder "$HOME/.config/iterm2"
+# fi
