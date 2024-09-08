@@ -4,6 +4,9 @@
 # - install kickstart.nvim
 # - install plugins for micro
 
+# Give yadm it's own easily accessible config and ignore
+yadm gitconfig include.path ~/.config/yadm/gitconfig
+
 # Install homebrew if its missing
 if ! command -v brew &> /dev/null; then
     echo "Installing homebrew"
