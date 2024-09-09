@@ -1,0 +1,35 @@
+[layout]
+direction = "vertical"
+tree_size = 65
+
+[colors]
+focus_border = {fg = "blue", bold = true}
+
+[colors.tree]
+border = {fg = "dark-gray"}
+name = {fg = "#9CDCFE"}
+selected = {fg = "black", bg = "blue"}
+type_str = {fg = "#CE9178", bold = true, italic = true}
+type_null = {fg = "#4A9CCB", bold = true, italic = true}
+type_bool = {fg = "#4A9CCB", bold = true, italic = true}
+type_num = {fg = "#A7CE9B", bold = true, italic = true}
+type_arr = {fg = "#CE70B3", bold = true, italic = true}
+type_obj = {fg = "#CE70B3", bold = true, italic = true}
+
+[colors.data]
+border = {fg = "dark-gray"}
+name = {fg = "#9CDCFE"}
+symbol = {fg = "#CE70B3"}
+str = {fg = "#CE9178"}
+num = {fg = "#A7CE9B"}
+null = {fg = "#4A9CCB", italic = true}
+bool = {fg = "#4A9CCB", bold = true, italic = true}
+# section = {fg = "red", bold = true}
+
+[colors.footer]
+root = {fg = "cyan", bold = true}
+identify = {fg = "blue", bold = true}
+message = {fg = "blue", bold = true}
+
+[colors.popup]
+error_text = {fg = "red"}

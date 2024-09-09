@@ -2,6 +2,9 @@
 # Essential Plugins #
 # ================= #
 
+# TODO: consider fzf tab complete https://github.com/Aloxaf/fzf-tab
+# and forgit which also uses fzf https://github.com/wfxr/forgit
+
 # Activate Powerlevel10k Instant Prompt.
 # Do this as early as possible to make the prompt instantaneous.
 if [[ -r "$XDG_CACHE_HOME/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -102,6 +105,21 @@ fi
 export MICRO_TRUECOLOR=1          # force truecolor for micro
 export DIRENV_LOG_FORMAT=''       # silence direnv output
 export DISABLE_AUTO_TITLE="false" # Ensure autotitle is enabled
+export DELTA_PAGER="less --mouse" # Force mouse support in delta
+export FZF_DEFAULT_OPTS='
+  --color=preview-fg:-1,preview-bg:-1
+  --color=fg:-1,fg+:#f8f8f8,bg:-1,bg+:#383838
+  --color=hl:red,hl+:red,info:green,marker:blue
+  --color=prompt:blue,spinner:magenta,pointer:blue
+  --color=border:#383838,separator:green
+  --scrollbar="█"
+  --pointer="█"
+  --marker="►"
+  --prompt="↪ "
+  --border="rounded"
+  --preview-window="border-rounded"
+' # Set theming for fzf window
+#   --separator="="
 
 
 
