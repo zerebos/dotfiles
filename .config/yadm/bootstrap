@@ -13,9 +13,18 @@ if ! command -v brew &> /dev/null; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-if [ -f "./Brewfile" ]; then
+# Have homebrew add itself to path if it installed
+if [[ -d "/opt/homebrew" ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+if [[ -d "/home/linuxbrew" ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
+if [ -f "~/.config/yadm/Brewfile" ]; then
     echo "Updating homebrew bundle"
-    brew bundle --file="./Brewfile"
+    brew bundle --file="~/.config/yadm/Brewfile"
 fi
 
 # If yazi was installed by brew then add the plugins too
@@ -27,11 +36,18 @@ if command -v yazi &> /dev/null; then
     ya pack -a KKV9/command
     ya pack -a imsi32/yatline
     ya pack -a imsi32/yatline-githead
+    ya pack -a ndtoan96/ouch
 fi
 
 # If eget was installed we can add custom binaries too
-if command -v eget &> /dev/null; then
-    eget grafviktor/goto
+# if command -v eget &> /dev/null; then
+#     eget grafviktor/goto --to=~/.local/bin
+# fi
+
+# if locale-gen exists ensure our locale is okay
+if command -v locale-gen &> /dev/null; then
+    echo "Generating locale (en_US.UTF-8)"
+    sudo locale-gen en_US.UTF-8
 fi
 
 
@@ -40,6 +56,7 @@ fi
 #   echo "Running Darwin specific steps:"
 
 # fi
+# else sudo locale-gen en_US.UTF-8
 
 # Set terminal prefs
 # if [ -d "$HOME/.config/iterm2" ]; then

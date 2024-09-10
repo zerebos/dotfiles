@@ -1,5 +1,7 @@
 # yadm Brewfile essentials to bootstrap a new install
+# TODO: separate them into separate brewfiles to auto install more specific utilities
 tap "homebrew/bundle"
+tap "veeso/termscp"
 brew "asciinema"
 brew "bat"
 brew "bottom"
@@ -7,7 +9,7 @@ brew "bottom"
 # brew "direnv"
 brew "diskonaut"
 brew "dua-cli"
-brew "eget" # eget goto
+# brew "eget" # sshs > goto currently, add eget back when it's needed
 brew "erdtree"
 brew "eza"
 brew "fastfetch"
@@ -37,7 +39,7 @@ brew "rust"
 brew "silicon"
 brew "sshs"
 brew "superfile"
-brew "veeso/termscp/termscp"
+brew "termscp"
 brew "tlrc"
 brew "yadm"
 brew "yazi"
