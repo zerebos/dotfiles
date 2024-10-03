@@ -22,7 +22,7 @@ if [[ -d "/home/linuxbrew" ]]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
-if [ -f "~/.config/yadm/Brewfile" ]; then
+if [[ -f ~/.config/yadm/Brewfile ]]; then
     echo "Updating homebrew bundle"
     brew bundle --file="~/.config/yadm/Brewfile"
 fi
