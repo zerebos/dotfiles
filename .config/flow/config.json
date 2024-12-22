@@ -1,20 +1,24 @@
 {
     "frame_rate": 60,
-    "theme": "dark_plus",
+    "theme": "default",
     "input_mode": "flow",
     "gutter_line_numbers": true,
     "gutter_line_numbers_relative": false,
     "vim_normal_gutter_line_numbers_relative": true,
     "vim_visual_gutter_line_numbers_relative": true,
     "vim_insert_gutter_line_numbers_relative": false,
+    "vim_insert_chording_keybindings": false,
     "enable_terminal_cursor": false,
     "enable_terminal_color_scheme": true,
     "highlight_current_line": true,
     "highlight_current_line_gutter": true,
-    "show_whitespace": false,
+    "whitespace_mode": "none",
     "animation_min_lag": 0,
     "animation_max_lag": 150,
     "enable_format_on_save": false,
+    "indent_size": 4,
+    "tab_width": 8,
     "top_bar": "",
-    "bottom_bar": "mode file log selection diagnostics linenumber"
+    "bottom_bar": "mode file log selection diagnostics linenumber",
+    "lsp_request_timeout": 10
 }

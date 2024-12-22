@@ -15,27 +15,24 @@ id   = "git"
 name = "*/"
 run  = "git"
 
+[[plugin.prepend_fetchers]]
+id   = "yatline-githead"
+name = "*"
+run  = "yatline-githead"
 
-[[plugin.prepend_previewers]]
-mime = "application/*zip"
-run = "ouch"
+[[plugin.prepend_fetchers]]
+id   = "yatline-githead"
+name = "*/"
+run  = "yatline-githead"
 
-[[plugin.prepend_previewers]]
-mime = "application/x-tar"
-run = "ouch"
 
-[[plugin.prepend_previewers]]
-mime = "application/x-bzip2"
-run = "ouch"
-
-[[plugin.prepend_previewers]]
-mime = "application/x-7z-compressed"
-run = "ouch"
-
-[[plugin.prepend_previewers]]
-mime = "application/x-rar"
-run = "ouch"
-
-[[plugin.prepend_previewers]]
-mime = "application/x-xz"
-run = "ouch"
+[plugin]
+prepend_previewers = [
+	# Archive previewer
+	{ mime = "application/*zip",            run = "ouch" },
+	{ mime = "application/x-tar",           run = "ouch" },
+	{ mime = "application/x-bzip2",         run = "ouch" },
+	{ mime = "application/x-7z-compressed", run = "ouch" },
+	{ mime = "application/x-rar",           run = "ouch" },
+	{ mime = "application/x-xz",            run = "ouch" },
+]

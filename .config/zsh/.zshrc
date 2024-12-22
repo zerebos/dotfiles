@@ -95,6 +95,7 @@ bindkey  "^[[3~"  delete-char       # DELETE
 # Add important paths to $PATH
 [[ ":$PATH:" == *":$HOME/bin:"* ]] || export PATH=$PATH:~/bin
 [[ ":$PATH:" == *":$HOME/.local/bin:"* ]] || export PATH=$PATH:~/.local/bin
+[[ ":$PATH:" == *":$HOME/go/bin:"* ]] || export PATH=$PATH:~/go/bin
 
 # Setup some env vars
 if command -v flow &> /dev/null; then
