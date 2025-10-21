@@ -33,6 +33,15 @@ palette = 15=#f8f8f8
 
 #keybind = home=text:\x01
 #keybind = end=text:\x05
+keybind = global:cmd+grave_accent=toggle_quick_terminal
+
 
 
 unfocused-split-opacity = 1
+quick-terminal-position = center
+quick-terminal-screen = mouse
+
+
+macos-icon=holographic
+
+shell-integration-features=ssh-env,ssh-terminfo,title,cursor,sudo

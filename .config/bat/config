@@ -1,1 +1,12 @@
 --theme="Visual Studio Dark+"
+
+# Include full style like grids, lines, filename, file size
+--style=full,-numbers
+
+# Use less for line numbers so they can be toggled to copy data
+# R = raw control characters
+# F = quit if one screen
+# N = line numbers by default
+# header = use bat's header as a sticky
+# no-number-header = don't count bat's header in the line number
+--pager="less -RFN --header=4 --no-number-headers"

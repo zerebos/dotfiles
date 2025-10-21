@@ -4,7 +4,7 @@ options:
   implicit_slide_ends: true
 defaults:
   image_protocol: kitty-local
-  theme: terminal-dark
+  theme: dark+
 bindings:
   exit: ["<c-c>", "q"]
 snippet:

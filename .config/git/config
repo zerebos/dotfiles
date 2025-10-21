@@ -1,6 +1,7 @@
 [core]
     excludesFile = ~/.config/git/ignore
     pager = delta || bat || less
+    autocrlf = input
 
 [interactive]
     diffFilter = delta --color-only --features=interactive
@@ -27,12 +28,6 @@
 [diff]
     colorMoved = default
 
-[filter "lfs"]
-    clean = git-lfs clean -- %f
-    smudge = git-lfs smudge -- %f
-    process = git-lfs filter-process
-    required = true
-
 [user]
     name = Zerebos
     email = me@zerebos.com
@@ -55,3 +50,8 @@
 
 [includeIf "gitdir:GitHub@IBM/"]
     path = config-ibm
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

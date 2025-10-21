@@ -9,7 +9,7 @@ local config = wezterm.config_builder()
 -- For example, changing the color scheme:
 config.color_scheme = 'Alacritty'
 config.font = wezterm.font 'JetBrainsMono Nerd Font'
--- config.default_prog = { 'wsl.exe' }
+config.default_prog = { '/bin/zsh', '-l' }
 config.wsl_domains = {
   {
     -- The name of this specific domain.  Must be unique amonst all types
@@ -22,7 +22,7 @@ config.wsl_domains = {
     distribution = 'Ubuntu',
   },
 }
-config.default_domain = 'WSL:Ubuntu'
+-- config.default_domain = 'WSL:Ubuntu'
 
 config.color_schemes = {
   ['Alacritty'] = {
