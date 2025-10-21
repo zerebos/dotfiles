@@ -50,8 +50,34 @@
 
 [includeIf "gitdir:GitHub@IBM/"]
     path = config-ibm
+
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+
+[alias]
+    # Semantic Shortcuts
+    branches = branch -a
+    tags = tag
+    stashes = stash list
+    remotes = remote -v
+
+    # Common ops
+    unstage = reset -q HEAD --
+    discard = checkout --
+    uncommit = reset --mixed HEAD~
+    amend = commit --amend
+
+    # Commit info
+    last = log -1 HEAD --stat
+    tree = log --all --graph --decorate --oneline
+    hist = log --pretty=format:'%Cblue%ci %Creset| %Cgreen%h %Creset| %Cred%an (%cn) %Creset| %s %s'
+
+    # Diffs
+    show-tracked = ls-tree --name-only -r HEAD
+    unmerged = diff --name-only --diff-filter=U
+
+    # Worktrees
+    wt = worktree
