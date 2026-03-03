@@ -1,7 +1,9 @@
 [core]
     excludesFile = ~/.config/git/ignore
     pager = delta || bat || less
-    autocrlf = input
+    # autocrlf = input
+    eol = lf
+    autocrlf = false
 
 [interactive]
     diffFilter = delta --color-only --features=interactive
@@ -52,10 +54,10 @@
     path = config-ibm
 
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
 
 [alias]
     # Semantic Shortcuts
