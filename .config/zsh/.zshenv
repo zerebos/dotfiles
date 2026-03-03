@@ -12,3 +12,5 @@ export LC_ALL=en_US.UTF-8
 if command -v python3 &> /dev/null; then
     alias python="python3"
 fi
+
+export PKG_CONFIG_PATH=/usr/lib64/pkgconfig:/usr/share/pkgconfig 
