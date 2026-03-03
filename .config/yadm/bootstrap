@@ -15,11 +15,11 @@ fi
 
 # Have homebrew add itself to path if it installed
 if [[ -d "/opt/homebrew" ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 if [[ -d "/home/linuxbrew" ]]; then
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
 if [[ -f ~/.config/yadm/Brewfile ]]; then
