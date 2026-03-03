@@ -221,6 +221,10 @@ if [ -f $ZDOTDIR/aliases.zsh ]; then
     . $ZDOTDIR/aliases.zsh
 fi
 
+if [ -f $ZDOTDIR/aliases.local.zsh ]; then
+    . $ZDOTDIR/aliases.local.zsh
+fi
+
 # My new approach: source all .zsh files in the aliases dir
 # It's more modular and less error prone than one giant file
 for f in $ZDOTDIR/aliases/*.zsh(N); do
