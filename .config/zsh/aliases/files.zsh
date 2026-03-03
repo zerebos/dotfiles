@@ -1,6 +1,6 @@
-# ======== #
-# DEFAULTS #
-# ======== #
+# ================= #
+# LISTING & VIEWING #
+# ================= #
 
 alias ll="ls -lh"
 alias la="ls -ah"
@@ -34,22 +34,67 @@ alias presenterm="presenterm --image-protocol=kitty-local"
 # Grep with colors by default
 alias grep="grep --color=auto"
 
-# Make mkdir use -p and -v by default
-alias mkdir="mkdir -pv"
-
 # Set nano to whatever editor is
 alias nano="${EDITOR:-nano}"
 
+# Pretty print json files with jq if available
+json() {
+    [[ -f "$1" ]] || { echo "File not found: $1"; return 1; }
+    if command -v jq &>/dev/null; then
+        jq . "$1"
+    else
+        cat "$1" # This will default to bat if available, or plain cat otherwise
+    fi
+}
+
+# Pretty print yaml files with yq if available
+yaml() {
+    [[ -f "$1" ]] || { echo "File not found: $1"; return 1; }
+    if command -v yq &>/dev/null; then
+        yq . "$1"
+    else
+        cat "$1" # This will default to bat if available, or plain cat otherwise
+    fi
+}
+
+# Hexdump a file with hexdump or xxd
+hex() {
+    [[ -f "$1" ]] || { echo "File not found: $1"; return 1; }
+    if command -v hexdump &>/dev/null; then
+        hexdump . "$1"
+    else
+        xxd "$1"
+    fi
+}
 
 
-# ========= #
-# UTILITIES #
-# ========= #
+
+# =============== #
+# FILE & PATH OPS #
+# =============== #
+
+# Make mkdir use -p and -v by default
+alias mkdir="mkdir -pv"
 
 # Make a directory and cd into it
 function mkcd(){
     mkdir -p -- "$1";
     cd -- "$1";
+}
+
+# Create file and parent directories
+touchd() {
+    mkdir -p "$(dirname "$1")" && touch "$1"
+}
+
+# Move with confirmation and verbose output
+mvf() {
+    mv -iv "$@"
+}
+
+# Copy with confirmation and verbose output
+cpf() {
+    cp -iv "$@"
 }
 
 # Safely delete to trash first if it exists
@@ -66,23 +111,17 @@ rip() {
     fi
 }
 
-# Get size of a directory in a human readable format, sorted by size
-fsize() {
-    DIR=${1:-.}
-    DIR="$(realpath $DIR)"
-    echo "Getting size of $DIR"
-    echo ""
-    du -hd 1 "$DIR" | sort -k 1 -n
-}
 
-# Get a dataurl version of a file
-function dataurl() {
-	local mimeType=$(file -b --mime-type "$1");
-	if [[ $mimeType == text/* ]]; then
-		mimeType="${mimeType};charset=utf-8";
-	fi
-	echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')";
-}
+
+# =============== #
+# SEARCH & FILTER #
+# =============== #
+
+# Recursive fdupes if it exists
+if command -v fdupes &>/dev/null; then
+    alias fdupes="fdupes -r"
+fi
+
 
 # Use ripgrep to find in files but pipe to fzf
 fif() {
@@ -105,10 +144,68 @@ fif() {
       --bind 'enter:become(vim {1} +{2})'
 }
 
+# Use fd to find files and pipe to fzf
+ff() {
+    fd . | fzf
+}
+
+# Use fd to find files with a given extension and pipe to fzf
+fext() {
+    [[ -n "$1" ]] || { echo "Usage: fext <ext>"; return 1; }
+    fd -e "$1" | fzf
+}
+
+
+
+# ==================== #
+# METADATA & TRANSFORM #
+# ==================== #
+
+# Get size of a directory in a human readable format, sorted by size
+fsize() {
+    DIR=${1:-.}
+    DIR="$(realpath "$DIR")"
+    echo "Getting size of $DIR"
+    echo ""
+    du -hd 1 "$DIR" | sort -k 1 -n
+}
+
+# Get detailed info about a file or directory
+finfo() {
+    [[ -e "$1" ]] || { echo "File not found: $1"; return 1; }
+    stat "$1"
+}
+
+# Get a dataurl version of a file
+function dataurl() {
+	local mimeType=$(file -b --mime-type "$1");
+	if [[ $mimeType == text/* ]]; then
+		mimeType="${mimeType};charset=utf-8";
+	fi
+	echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')";
+}
+
+# Count lines in a file
+lines() {
+    [[ -f "$1" ]] || { echo "File not found: $1"; return 1; }
+    wc -l "$1"
+}
+
+# Disk usage of current directory sorted by size
+duh() {
+    du -ah . | sort -h
+}
+
+
+
+# ====================== #
+# ARCHIVING & EXTRACTING #
+# ====================== #
+
 # Extract nearly anything
 x() {
     local file="$1"
-    [ -f "$file" ] || { echo "No such file: $file" >&2; return 1; }
+    [[ -f "$file" ]] || { echo "No such file: $file" >&2; return 1; }
     case "$file" in
         *.tar.bz2)   tar xjf "$file" ;;
         *.tar.gz)    tar xzf "$file" ;;
