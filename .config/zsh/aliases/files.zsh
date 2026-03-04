@@ -7,6 +7,8 @@ alias la="ls -ah"
 alias ld="ll --only-dirs"
 alias lla="ls -lah"
 alias search="find . -name "
+alias mdv="glow"
+alias jj="jq ."
 
 # If eza is installed, use that instead of ls
 if command -v eza &> /dev/null; then
@@ -65,6 +67,11 @@ hex() {
     else
         xxd "$1"
     fi
+}
+
+# Use fzf to find dirs and cd into them
+zz() {
+    zoxide query -l | fzf | xargs z
 }
 
 
@@ -201,6 +208,8 @@ duh() {
 # ====================== #
 # ARCHIVING & EXTRACTING #
 # ====================== #
+
+alias ou="ouch"
 
 # Extract nearly anything
 x() {

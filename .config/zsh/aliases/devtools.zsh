@@ -13,10 +13,11 @@ curlj() {
 
 # Serve a local directory temporarily
 serve() {
-    if ! command -v bunx &> /dev/null; then echo "Need bunx to run this!"; return 1; fi
-    local port="${1:-8000}"
-    local dir="${2:-.}"
-    bunx --bun serve --port "$port" --dir "$dir"
+    if command -v bunx &>/dev/null; then
+        bunx --bun serve --port "${1:-8000}" --dir "${2:-.}"
+    else
+        python3 -m http.server "${1:-8000}"
+    fi
 }
 
 
@@ -31,27 +32,34 @@ uuid() {
     bun -e "import { randomUUID } from \"node:crypto\"; console.log(randomUUID())"
 }
 
+# Pick a package.json script with fzf and run it with bun
+__pick_pkg_script() {
+    jq -r '.scripts | to_entries[] | "\(.key)\t\(.value)"' package.json \
+        | fzf --with-nth=1 --delimiter="\t" --preview 'echo -e "\033[1mCommand:\033[0m {2}"'
+}
+
+
 # Run package.json script using bun (requires jq)
 rpkg() {
     if ! command -v jq &> /dev/null; then echo "Need jq to run this!"; return 1; fi
-    local script
-    script=$(jq -r '.scripts | keys[] ' package.json | sort | fzf)
-    bun run $(echo "$script")
+    local script=$(__pick_pkg_script) || return
+    bun run "${script%%$'\t'*}"
 }
 
 # Run package.json script using bun with fzf previewing the command
 fpkg() {
     if ! command -v jq &> /dev/null; then echo "Need jq to run this!"; return 1; fi
-    jq -r '.scripts | to_entries[] | "\(.key)|\(.value)"' package.json \
-      | fzf --with-nth=1 --delimiter "|" --preview 'echo -e "\033[1mCommand:\033[0m {2}"' \
-      | cut -d'|' -f1 \
-      | xargs -r bun run
+    local script=$(__pick_pkg_script) || return
+    print -z "bun run ${script%%$'\t'*}"
 }
 
 # List package.json scripts
 lspkg() {
     if ! command -v jq &> /dev/null; then echo "Need jq to run this!"; return 1; fi
-    jq -r '.scripts | to_entries[] | "[\(.key)] \(.value)"' package.json
+    {
+        echo -e "\033[1mSCRIPT\tCOMMAND\033[0m";
+        jq -r '.scripts | to_entries[] | "[\(.key)]\t\(.value)"' package.json;
+    } | column -t -s $'\t'
 }
 
 
@@ -82,7 +90,7 @@ gotf() {
 
 # List all dependencies (both direct and indirect) with fzf
 gomodf() {
-    go list -m all 2>/dev/null | fzf
+    go list -m all 2>/dev/null | fzf --preview 'go mod why {1}' --preview-window=wrap
 }
 
 
@@ -105,6 +113,12 @@ pathsn() {
     done
 }
 
+# Show detailed info about a command, including all paths it appears in
+whichp() {
+    [[ -n "$1" ]] || { echo "Usage: whichp <command>"; return 1; }
+    whence -a -- "$1"
+}
+
 # Show the nearest .env
 envcat() {
     local dir="$PWD"
@@ -124,10 +138,25 @@ fenv() {
     printenv | fzf --query="$1"
 }
 
-# Show detailed info about a command, including all paths it appears in
-whichp() {
-    [[ -n "$1" ]] || { echo "Usage: whichp <command>"; return 1; }
-    whence -a -- "$1"
+# Search for a command in $PATH with fzf
+fcmd() {
+    local cmd
+    cmd=$(print -l ${(ko)commands} | fzf --query="$1" --preview 'whence -a {}' --height=40% --border) || return
+    print -z "$cmd"
+}
+
+# Search for an alias with fzf
+falias() {
+    local cmd
+    cmd=$(alias | sed 's/=/\t/' | fzf --query="$1" --delimiter="\t" --with-nth=1 --preview 'echo -e "\033[1mAlias:\033[0m {1}\n\n\033[1mExpands to:\033[0m {2}"' --preview-window=up:3:wrap) || return
+    print -z "${cmd%%$'\t'*}"
+}
+
+# Search for a brew with fzf
+fbrew() {
+    local cmd
+    cmd=$(brew list | fzf --query="$1" --preview 'echo -e "\033[1mFormula/Cask:\033[0m {}\n"; HOMEBREW_COLOR=1 brew info {}' --border) || return
+    print -z "$cmd"
 }
 
 
@@ -135,6 +164,8 @@ whichp() {
 # ================== #
 # WORKFLOW UTILITIES #
 # ================== #
+
+alias hf="hyperfine"
 
 # TODO: these should move to a helper lib
 # Ensure a command exists, printing an error if it doesn't
@@ -201,4 +232,10 @@ gitmoji() {
 ts() {
     echo "unix: $(date +%s)"
     echo "iso:  $(date -Iseconds)"
+}
+
+# Take a screenshot to share using silicon (requires silicon)
+ssf() {
+    __ensure_commands silicon || return 1
+    silicon "$1" -o "${1%.*}.png"
 }

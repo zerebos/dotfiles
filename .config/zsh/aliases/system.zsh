@@ -2,8 +2,11 @@
 # NETWORKING #
 # ========== #
 
+# HTTP load testing with wrk (requires wrk)
+alias wrk="wrk -t4 -c50 -d10s"
+
 # Get current external ip
-alias myip='curl -s https://ifconfig.me || curl -s https://api.ipify.org'
+alias myip="curl -s https://ifconfig.me || curl -s https://api.ipify.org"
 
 # What’s listening (macOS-friendly)
 listening() {
@@ -11,6 +14,15 @@ listening() {
         sudo lsof -nP -iTCP -sTCP:LISTEN
     else
         ss -tulpn
+    fi
+}
+
+# Default to gping if available, otherwise fallback to ping
+ping() {
+    if command -v gping &> /dev/null; then
+        gping "$@"
+    else
+        command ping "$@"
     fi
 }
 
@@ -44,6 +56,9 @@ alias cpu="ps aux --sort=-%cpu | head"
 alias dfh="df -h"
 alias watchls="watch -n 1 ls -l"
 alias watchps="watch -n 1 'ps aux | head'"
+alias gdd="gdu-go --show-disks"
+alias dua="dua interactive"
+alias dn="diskonaut"
 
 
 
