@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # TODO: maybe
 # - install kickstart.nvim
@@ -14,17 +15,14 @@ if ! command -v brew &> /dev/null; then
 fi
 
 # Have homebrew add itself to path if it installed
-if [[ -d "/opt/homebrew" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+if command -v brew &>/dev/null; then
+    eval "$(brew shellenv)"
 fi
 
-if [[ -d "/home/linuxbrew" ]]; then
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-fi
 
-if [[ -f ~/.config/yadm/Brewfile ]]; then
+if [[ -f ~/.config/yadm/essentials.rb ]]; then
     echo "Updating homebrew bundle"
-    brew bundle --file="~/.config/yadm/Brewfile"
+    brew bundle --file="$HOME/.config/yadm/essentials.rb"
 fi
 
 # If yazi was installed by brew then add the plugins too
@@ -45,9 +43,10 @@ fi
 # fi
 
 # if locale-gen exists ensure our locale is okay
-if command -v locale-gen &> /dev/null; then
-    echo "Generating locale (en_US.UTF-8)"
-    sudo locale-gen en_US.UTF-8
+if command -v locale-gen &>/dev/null; then
+    if ! locale -a | grep -q "en_US.utf8"; then
+        sudo locale-gen en_US.UTF-8
+    fi
 fi
 
 
@@ -63,3 +62,5 @@ fi
 #     echo "Setting iTerm preference folder"
 #     defaults write com.googlecode.iterm2 PrefsCustomFolder "$HOME/.config/iterm2"
 # fi
+
+echo "Bootstrap complete!"

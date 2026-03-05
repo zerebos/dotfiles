@@ -1,0 +1,7 @@
+brew "asciinema"
+brew "direnv"
+brew "dotenvx/brew/dotenvx"
+brew "git-lfs"
+brew "anomalyco/tap/opencode"
+brew "neovim"
+brew "wrk"

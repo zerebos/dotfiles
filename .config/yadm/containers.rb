@@ -1,0 +1,5 @@
+# brew "lazydocker"
+# brew "oxker"
+# brew "podman"
+# brew "podman-compose"
+# cask "amir20/dtop/dtop"

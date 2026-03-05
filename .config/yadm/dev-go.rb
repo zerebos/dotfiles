@@ -1,0 +1,6 @@
+brew "golangci-lint"
+go "mvdan.cc/gofumpt"
+go "github.com/goreleaser/goreleaser/v2"
+go "github.com/cpcloud/micasa/cmd/micasa"
+go "github.com/wailsapp/wails/v3/cmd/wails3"
+cask "goreleaser/tap/goreleaser"
