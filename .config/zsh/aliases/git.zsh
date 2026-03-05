@@ -23,8 +23,17 @@ alias glog="git log --oneline"
 # ============= #
 
 # Fuzzy find and show git stashes
+# Features:
+#   - Lists all stashes with colored formatting
+#   - Preview pane shows full stash diff
+#   - Ctrl+S toggles between sort modes
+#   - Enter shows the stash diff in less
+#
+# Usage: fstash
+# Example: Browse stashes, preview them, and view the full diff
 fstash() {
     __ensure_commands git fzf || return
+    # Format: stash index (gd) | commit hash (magenta) | timestamp | stash message
     git stash list --color=always --pretty="%C(brightblack)%gd %C(magenta)%h %>(14)%C(cyan)%cr %C(yellow)%gs" |
     fzf --ansi --no-sort --tiebreak=index --bind=ctrl-s:toggle-sort \
         --preview 'git stash show --color=always -p {1}' \
@@ -32,8 +41,17 @@ fstash() {
 }
 
 # Fuzzy find and checkout git commits
+# Features:
+#   - Shows decorated git log graph
+#   - Preview pane shows full commit diff
+#   - Ctrl+S toggles between sort modes
+#   - Enter opens commit diff in pager
+#
+# Usage: fshow [git log args]
+# Example: fshow origin/main..HEAD to show unpushed commits
 fshow() {
     __ensure_commands git fzf || return
+    # Extract commit hash from fzf selection using grep to find 7-char hex strings
     git log --graph --color=always \
         --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
     fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \

@@ -25,6 +25,9 @@ serve() {
 # ==================== #
 # NODE & BUN WORKFLOWS #
 # ==================== #
+# These functions provide convenient ways to work with package.json scripts.
+# They use jq to parse package.json and fzf for interactive selection.
+# All execute scripts using "bun run" - replace with "npm run" if preferred.
 
 # Get a random UUID
 uuid() {
@@ -32,7 +35,8 @@ uuid() {
     bun -e "import { randomUUID } from \"node:crypto\"; console.log(randomUUID())"
 }
 
-# Pick a package.json script with fzf and run it with bun
+# Helper: Parse package.json scripts and display in a format for fzf
+# Returns: "script_name\tcommand" format for fzf --delimiter
 __pick_pkg_script() {
     __ensure_commands jq fzf || return
     jq -r '.scripts | to_entries[] | "\(.key)\t\(.value)"' package.json \
@@ -40,17 +44,27 @@ __pick_pkg_script() {
 }
 
 
-# Run package.json script using bun (requires jq)
+# Interactively select and RUN a package.json script
+# Uses fzf to pick the script, then executes it with bun run
+#
+# Usage: rpkg
+# Example: Shows scripts, pick one, it runs immediately
 rpkg() {
     __ensure_commands jq bun fzf || return
     local script=$(__pick_pkg_script) || return
     bun run "${script%%$'\t'*}"
 }
 
-# Run package.json script using bun with fzf previewing the command
+# Interactively select a package.json script and print command to prompt
+# Allows editing before running (good for adding flags)
+#
+# Usage: fpkg
+# Example: Shows scripts, pick one, command appears in prompt for editing
 fpkg() {
     __ensure_commands jq bun fzf || return
     local script=$(__pick_pkg_script) || return
+
+    # print -z sets the command line buffer without running the command
     print -z "bun run ${script%%$'\t'*}"
 }
 
@@ -84,17 +98,31 @@ gob() {
     go build -o bin/ "$target"
 }
 
-# Run a go test with fzf to select the test
+# Run a specific test from the current package with fzf picker
+# Lists all available Test functions and lets you select which to run
+#
+# Usage: gotf
+# Example: Shows list of tests like "TestMain", "TestFoo", etc., pick one
 gotf() {
     __ensure_commands fzf go || return
     local test
+
+    # Parse test names from "go test -list ." output and filter for functions starting with "Test"
     test=$(go test -list . | grep -E '^Test' | fzf) || return
+
+    # Run just the selected test
     go test -run "$test"
 }
 
-# List all dependencies (both direct and indirect) with fzf
+# Browse go module dependencies with preview showing why module is needed
+# Helps understand dependency chains and indirect dependencies
+#
+# Usage: gomodf
+# Preview shows the output of "go mod why" for the selected module
 gomodf() {
     __ensure_commands fzf go || return
+
+    # List ALL dependencies (direct and indirect with -m all)
     go list -m all 2>/dev/null | fzf --preview 'go mod why {1}' --preview-window=wrap
 }
 
@@ -176,7 +204,10 @@ fbrew() {
 
 alias hf="hyperfine"
 
-# emoji picker
+# Pick an emoji from the latest list of gitmojis, cached for 30 days, with fzf search and preview
+#
+# Usage: emoji
+# Returns: The selected emoji character (e.g. "✨") which can be used in commit messages or elsewhere
 emoji() {
     __ensure_commands fzf || return 1
     local url='https://git.io/JXXO7'
@@ -184,8 +215,11 @@ emoji() {
     fzf < "$file"
 }
 
-# TODO: consider using gitmoji-cli
-# gitmoji picker
+# Gitmoji picker for commit messages that fetches the latest gitmojis
+# from the GitHub repo, caches for 30 days, and allows searching with fzf
+#
+# Usage: git commit -m "$(gitmoji) Your commit message"
+# Returns: The selected emoji code (e.g. ":sparkles:") which can be used in commit messages or elsewhere
 gitmoji() {
     __ensure_commands jq fzf || return 1
     local url='https://raw.githubusercontent.com/carloscuesta/gitmoji/refs/heads/master/packages/gitmojis/src/gitmojis.json'

@@ -23,7 +23,7 @@ setopt INC_APPEND_HISTORY      # write incrementally (multi-session friendly)
 setopt AUTO_CD               # 'foo' becomes 'cd foo' if directory
 setopt CORRECT               # spelling correction for commands
 #setopt CORRECT_ALL=false    # use this if I get annoyed with correcting arguments
-setopt EXTENDED_GLOB         # advanced globbing
+setopt EXTENDED_GLOB         # advanced globbing like *, **, [], etc.
 setopt NO_CLOBBER            # '>' won’t clobber files; use >| to force
 setopt PIPE_FAIL             # pipeline fails if any command fails
 setopt INTERACTIVE_COMMENTS  # allow comments at prompt

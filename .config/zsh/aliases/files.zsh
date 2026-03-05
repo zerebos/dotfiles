@@ -131,13 +131,25 @@ if command -v fdupes &>/dev/null; then
 fi
 
 
-# Use ripgrep to find in files but pipe to fzf
+# Interactive file content search using ripgrep + fzf
+# Features:
+#   - Live search as you type
+#   - Toggle between ripgrep (content) and fzf (filename) modes with Ctrl-T
+#   - Preview shows file with highlighted search line
+#   - Enter opens file in vim at the matching line
+#
+# Usage: fif <search term>
 fif() {
     __ensure_commands rg fzf || return
     if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
+
+    # Temporary files to store queries when switching between modes
     rm -f /tmp/rg-fzf-{r,f}
+
     RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
     INITIAL_QUERY="${*:-}"
+
+    # Ctrl-T switches between ripgrep (search content) and fzf (filter filenames) modes
     fzf --ansi --disabled --query "$INITIAL_QUERY" \
         --bind "start:reload:$RG_PREFIX {q}" \
         --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
@@ -187,7 +199,12 @@ finfo() {
     stat "$1"
 }
 
-# Get a dataurl version of a file
+# Convert a file to a data URL (base64-encoded inline data)
+# Useful for embedding small files directly in HTML/CSS or API calls
+#
+# Usage: dataurl <file>
+# Example: dataurl logo.png
+#   Output: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA...
 function dataurl() {
 	local mimeType=$(file -b --mime-type "$1");
 	if [[ $mimeType == text/* ]]; then
@@ -215,7 +232,16 @@ duh() {
 
 alias ou="ouch"
 
-# Extract nearly anything
+# Extract nearly anything to the current directory based on file extension
+# Supports: .tar.gz, .tar.bz2, .tar.xz, .tar.zst, .tar, .zip, .7z, .gz, .xz, .zst, and more
+# Automatically detects the type based on extension and uses the appropriate tool
+# If the file type is unknown, it prints an error message
+# Note: For .gz, .xz, and .zst, it expects a single file (not a tarball) and will decompress it in place
+#
+# Usage: x archive.tar.gz
+# Examples:
+#   x archive.tar.gz
+#   x files.zip
 x() {
     local file="$1"
     [[ -f "$file" ]] || { echo "No such file: $file" >&2; return 1; }
@@ -240,7 +266,15 @@ x() {
     esac
 }
 
-# Compress nearly anything
+# Compress nearly anything based on file extension, similar to the 'x' function above
+# Supports: .tar.gz, .tar.bz2, .tar.xz, .tar.zst, .tar, .zip, .7z, .gz, .xz, .zst, and more
+# Automatically detects the type based on extension and uses the appropriate tool
+# For .gz, .xz, and .zst, it expects a single file (not a directory) and will compress it in place
+#
+# Usage: c archive.tar.gz files...
+# Examples:
+#   c archive.tar.gz myfolder
+#   c files.zip file1.txt file2.txt
 c() {
     local out="$1"
     shift

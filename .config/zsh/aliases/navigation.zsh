@@ -95,13 +95,25 @@ cdf() {
 # UTILITIES #
 # ========= #
 
-# Alias for yazi to cd into dir on exit
+# Wrapper for yazi that changes shell directory when you quit yazi
+# Yazi writes its final directory to a temp file, which we then read and cd to
+# This allows the shell to follow yazi's navigation
+#
+# Usage: yy [directory]
 function yy() {
     __ensure_commands yazi || return 1
+
+    # Create a temp file to store yazi's exit directory
     local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+
+    # Run yazi and tell it to write its final directory to the temp file
     yazi "$@" --cwd-file="$tmp"
+
+    # Read the directory from temp file and cd if it's different from current
     if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
         builtin cd -- "$cwd"
     fi
+
+    # Clean up temp file
     rm -f -- "$tmp"
 }

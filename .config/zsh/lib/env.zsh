@@ -15,7 +15,6 @@ export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 # Add important paths to $PATH/path the zsh way
 path+=( "$HOME/bin" "$HOME/.local/bin" "$HOME/go/bin" )
 typeset -U path # Enforce uniqueness
-#export PATH="${path[*]}" # technicially not neeeded
 
 
 # Make the terminal title show the current directory when using Tabby terminal
