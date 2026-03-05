@@ -1,0 +1,171 @@
+#!/usr/bin/env zsh
+
+# Test script to validate dotfiles installation
+# Run this after installing dotfiles to ensure everything is working correctly
+#
+# Usage: ./bin/validate-dotfiles
+#
+# This script checks for:
+# - Essential tools and cli utilities are installed
+# - Directory structure is correct
+# - ZSH configuration is loaded
+# - Environment variables are properly set
+# - Custom aliases and functions are available
+#
+# Note: Run this from an interactive zsh shell for best results.
+# The script sources your ~/.zshrc to validate aliases and functions.
+
+# Don't exit on errors - we want to continue testing and report all failures
+setopt ERR_EXIT ERR_RETURN
+trap 'true' ZERR  # Prevent exit traps from killing the script
+
+FAIL_COUNT=0
+PASS_COUNT=0
+
+# Color output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Helper functions - using explicit return codes instead of relying on side effects
+pass() {
+    echo "${GREEN}✓${NC} $1"
+    ((PASS_COUNT++)) || true  # Increment counter, suppress false exit
+    return 0
+}
+
+fail() {
+    echo "${RED}✗${NC} $1"
+    ((FAIL_COUNT++)) || true  # Increment counter, suppress false exit
+    return 1
+}
+
+warn() {
+    echo "${YELLOW}!${NC} $1"
+}
+
+test_command() {
+    local cmd=$1
+    local category=${2:-""}
+    if command -v "$cmd" &>/dev/null; then
+        pass "$category $cmd is installed"
+    else
+        fail "$category $cmd is NOT installed"
+    fi
+}
+
+echo "🧪 Testing dotfiles installation...\n"
+
+# Load ZSH configuration to test aliases and functions
+# This ensures we have access to the startup environment
+if [[ -f "$HOME/.config/zsh/.zshrc" ]]; then
+    source "$HOME/.config/zsh/.zshrc" 2>/dev/null || true
+else
+    echo "${YELLOW}!${NC} ZSH config not found, skipping config-dependent tests"
+fi
+
+# ==================== #
+# ESSENTIAL TOOLS      #
+# ==================== #
+echo "Essential CLI Tools:"
+test_command "zsh" "Shell:"
+test_command "brew" "Package Manager:"
+test_command "git" "VCS:"
+test_command "fzf" "Fuzzy Finder:"
+test_command "jq" "JSON:"
+echo ""
+
+# ==================== #
+# MODERN CLI TOOLS     #
+# ==================== #
+echo "Modern CLI Replacements:"
+test_command "eza" "ls:"
+test_command "bat" "cat:"
+test_command "fd" "find:"
+test_command "rg" "grep:"
+test_command "zoxide" "cd:"
+test_command "erd" "tree:"
+echo ""
+
+# ==================== #
+# DIRECTORY STRUCTURE  #
+# ==================== #
+echo "Directory Structure:"
+[[ -d "$HOME/.config/zsh" ]] && pass "ZSH config directory exists" || fail "ZSH config directory missing"
+[[ -f "$HOME/.config/zsh/.zshrc" ]] && pass "ZSH .zshrc exists" || fail "ZSH .zshrc missing"
+[[ -d "$HOME/.config/zsh/lib" ]] && pass "ZSH lib directory exists" || fail "ZSH lib directory missing"
+[[ -d "$HOME/.config/zsh/aliases" ]] && pass "ZSH aliases directory exists" || fail "ZSH aliases directory missing"
+[[ -d "$HOME/.config/zsh/plugins" ]] && pass "ZSH plugins directory exists" || fail "ZSH plugins directory missing"
+[[ -d "$HOME/.config/yadm" ]] && pass "YADM config directory exists" || fail "YADM config directory missing"
+[[ -f "$HOME/bin/brewfile" ]] && pass "Brewfile utility exists" || fail "Brewfile utility missing"
+echo ""
+
+# ==================== #
+# ZSH CONFIGURATION    #
+# ==================== #
+echo "ZSH Configuration:"
+[[ -n "$ZDOTDIR" ]] && pass "ZDOTDIR is set ($ZDOTDIR)" || fail "ZDOTDIR is not set"
+[[ -n "$ZSH_CACHE_DIR" ]] && pass "ZSH_CACHE_DIR is set" || fail "ZSH_CACHE_DIR is not set"
+[[ -n "$EDITOR" ]] && pass "EDITOR is set ($EDITOR)" || fail "EDITOR is not set"
+
+# Check if custom functions are available
+if typeset -f __ensure_commands &>/dev/null; then
+    pass "Custom utility functions loaded"
+else
+    fail "Custom utility functions NOT loaded"
+fi
+echo ""
+
+# ==================== #
+# ALIASES              #
+# ==================== #
+echo "Aliases:"
+if alias ls &>/dev/null; then
+    pass "ls alias is set"
+else
+    fail "ls alias is NOT set"
+fi
+
+if alias cat &>/dev/null; then
+    pass "cat alias is set"
+else
+    fail "cat alias is NOT set"
+fi
+
+if alias gs &>/dev/null; then
+    pass "git shortcuts (gs) are set"
+else
+    fail "git shortcuts NOT set"
+fi
+echo ""
+
+# ==================== #
+# P10K THEME           #
+# ==================== #
+echo "Theme:"
+if [[ -f "$HOME/.config/zsh/p10k.zsh" ]]; then
+    pass "Powerlevel10k config exists"
+else
+    warn "Powerlevel10k config not found (optional)"
+fi
+echo ""
+
+# ==================== #
+# SUMMARY              #
+# ==================== #
+echo "========================================"
+echo "Tests Complete!"
+echo "Passed: ${GREEN}${PASS_COUNT}${NC}"
+echo "Failed: ${RED}${FAIL_COUNT}${NC}"
+echo "========================================"
+
+if [[ $FAIL_COUNT -gt 0 ]]; then
+    echo "\n${YELLOW}⚠️  Some tests failed. Review the output above.${NC}"
+    echo "Note: Tool failures don't mean installation failed - they may not be installed yet."
+    echo "Run 'brewfile install essentials' to install core tools, then re-run this test."
+    exit 1
+else
+    echo "\n${GREEN}✅ All tests passed! Your dotfiles are properly configured.${NC}"
+    exit 0
+fi

@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: maybe
-# - install kickstart.nvim
-# - install plugins for micro
 
 # Give yadm it's own easily accessible config and ignore
 yadm gitconfig include.path ~/.config/yadm/gitconfig
@@ -37,11 +34,6 @@ if command -v yazi &> /dev/null; then
     ya pack -a ndtoan96/ouch
 fi
 
-# If eget was installed we can add custom binaries too
-# if command -v eget &> /dev/null; then
-#     eget grafviktor/goto --to=~/.local/bin
-# fi
-
 # if locale-gen exists ensure our locale is okay
 if command -v locale-gen &>/dev/null; then
     if ! locale -a | grep -q "en_US.utf8"; then
@@ -49,18 +41,5 @@ if command -v locale-gen &>/dev/null; then
     fi
 fi
 
-
-# Do operating system specific actions
-# if [ "$system_type" = "Darwin" ]; then
-#   echo "Running Darwin specific steps:"
-
-# fi
-# else sudo locale-gen en_US.UTF-8
-
-# Set terminal prefs
-# if [ -d "$HOME/.config/iterm2" ]; then
-#     echo "Setting iTerm preference folder"
-#     defaults write com.googlecode.iterm2 PrefsCustomFolder "$HOME/.config/iterm2"
-# fi
 
 echo "Bootstrap complete!"
