@@ -1,0 +1,313 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+BREWFILE_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/yadm/brewfiles"
+
+usage() {
+    echo "Usage:"
+    echo "  brewfile list"
+    echo "  brewfile install <name> [<name> ...] [--dry-run]"
+    echo "  brewfile view <name>"
+    echo "  brewfile search <query>"
+    exit 1
+}
+
+list_brewfiles() {
+    echo "Available Brewfiles:"
+    for f in "$BREWFILE_DIR"/*.rb; do
+        basename "${f%.rb}"
+    done
+}
+
+brewfile_path() {
+    echo "$BREWFILE_DIR/$1.rb"
+}
+
+install_brewfiles() {
+    local dry_run=false
+    local names=()
+
+    # Parse args
+    for arg in "$@"; do
+        case "$arg" in
+            --dry-run) dry_run=true ;;
+            *) names+=("$arg") ;;
+        esac
+    done
+
+    if [[ ${#names[@]} -eq 0 ]]; then
+        echo "No Brewfiles specified."
+        list_brewfiles
+        exit 1
+    fi
+
+    for name in "${names[@]}"; do
+        local file
+        file=$(brewfile_path "$name")
+
+        if [[ ! -f "$file" ]]; then
+            echo "Error: Brewfile '$name.rb' not found."
+            list_brewfiles
+            continue
+        fi
+
+        echo "Installing from: $file"
+        if [[ "$dry_run" = true ]]; then
+            brew bundle --file="$file" --no-upgrade
+        else
+            brew bundle --file="$file"
+        fi
+    done
+}
+
+# view_brewfile() {
+#     local name="$1"
+#     local file="$BREWFILE_DIR/$name.rb"
+
+#     if [[ ! -f "$file" ]]; then
+#         echo "Error: Brewfile '$name.rb' not found."
+#         list_brewfiles
+#         exit 1
+#     fi
+
+#     local pattern='^(brew|cask|mas|vscode|go)'
+
+#     # Extract installable items with filename:line<TAB>item format
+#     local results
+#     results=$(grep -niE "$pattern" "$file" \
+#         | awk -F: -v fname="$name.rb" '{print fname ":" $1 "\t" $2}' || true)
+
+#     if [[ -z "$results" ]]; then
+#         echo "No installable items found in '$name.rb'."
+#         exit 0
+#     fi
+
+#     # If fzf is available, use interactive mode
+#     if command -v fzf >/dev/null 2>&1; then
+#         local selected
+#         selected=$(echo "$results" | fzf \
+#             --prompt="Items in $name.rb: " \
+#             --with-nth=2 \
+#             --delimiter="\t" \
+#             --preview '
+#                 echo {} | awk -F"\t" "{print \"\033[1mFile:\033[0m \" \$1}"
+#                 echo {} | awk -F"\t" "{print \"\n\" \$2}" \
+#                     | bat --color=always --style=plain --language=rb
+#             ' \
+#             --preview-window=right:60%)
+
+#         [[ -z "$selected" ]] && exit 0
+
+#         local item
+#         item=$(echo "$selected" | cut -f2- | xargs)
+
+#         echo "Installing: $item"
+
+#         case "$item" in
+#             brew\ *)
+#                 eval "$item"
+#                 ;;
+#             cask\ *)
+#                 brew install --cask "$(echo "$item" | cut -d\" -f2)"
+#                 ;;
+#             mas\ *)
+#                 mas install "$(echo "$item" | grep -o '[0-9]\+$')"
+#                 ;;
+#             vscode\ *)
+#                 code --install-extension "$(echo "$item" | cut -d\" -f2)"
+#                 ;;
+#             go\ *)
+#                 eval "$item"
+#                 ;;
+#         esac
+#     else
+#         # No fzf → just print the items
+#         echo "$results"
+#     fi
+# }
+
+
+# search_brewfiles() {
+#     local term="$1"
+
+#     if [[ -z "$term" ]]; then
+#         echo "Search term required."
+#         exit 1
+#     fi
+
+#     local pattern='^(brew|cask|mas|vscode|go)'
+
+#     local results
+#     results=$(grep -RniE "$pattern" "$BREWFILE_DIR" --include="*.rb" \
+#         | sed "s|$BREWFILE_DIR/||" \
+#         | awk -F: '{print $1 ":" $2 "\t" $3}' \
+#         | grep -i "$term" || true)
+
+#     if [[ -z "$results" ]]; then
+#         echo "No matches found for '$term'."
+#         exit 0
+#     fi
+
+#     if command -v fzf >/dev/null 2>&1; then
+#         local selected
+#         selected=$(echo "$results" | fzf \
+#             --prompt="Search results: " \
+#             --with-nth=2 \
+#             --delimiter="\t" \
+#             --preview '
+#                 echo {} | awk -F"\t" "{print \"\033[1mFile:\033[0m \" \$1}"
+#                 echo {} | awk -F"\t" "{print \"\n\" \$2}" | bat --color=always --style=plain --language=rb
+#             ' \
+#             --preview-window=right:60%)
+
+#         [[ -z "$selected" ]] && exit 0
+
+#         local file item
+#         file=$(echo "$selected" | cut -f1 | xargs)
+#         item=$(echo "$selected" | cut -f2- | xargs)
+
+#         echo "Installing: $item"
+
+#         case "$item" in
+#             brew\ *)
+#                 eval "$item"
+#                 ;;
+#             cask\ *)
+#                 brew install --cask "$(echo "$item" | cut -d\" -f2)"
+#                 ;;
+#             mas\ *)
+#                 mas install "$(echo "$item" | grep -o '[0-9]\+$')"
+#                 ;;
+#             vscode\ *)
+#                 code --install-extension "$(echo "$item" | cut -d\" -f2)"
+#                 ;;
+#             go\ *)
+#                 eval "$item"
+#                 ;;
+#         esac
+#     else
+#         echo "$results"
+#     fi
+# }
+
+extract_items() {
+    local file="$1"
+    local pattern='^(brew|cask|mas|vscode|go)'
+
+    {
+        grep -niE "$pattern" "$file" \
+            | awk -F: -v fname="$(basename "$file")" '{print fname ":" $1 "\t" $2}'
+    } || true
+}
+
+
+select_and_install() {
+    local results="$1"
+
+    if [[ -z "$results" ]]; then
+        echo "No matching items."
+        return
+    fi
+
+    if ! command -v fzf >/dev/null 2>&1; then
+        echo "$results"
+        return
+    fi
+
+    local selected
+    selected=$(echo "$results" | fzf \
+        --with-nth=2 \
+        --delimiter="\t" \
+        --preview '
+            echo {} | awk -F"\t" "{print \"\033[1mFile:\033[0m \" \$1}"
+            echo {} | awk -F"\t" "{print \"\n\" \$2}" \
+                | bat --color=always --style=plain --language=rb
+        ' \
+        --preview-window=right:60%)
+
+    [[ -z "$selected" ]] && return
+
+    local item
+    item=$(echo "$selected" | cut -f2- | xargs)
+
+    echo "Installing: $item"
+
+    case "$item" in
+        brew\ *)   eval "$item" ;;
+        cask\ *)   brew install --cask "$(echo "$item" | cut -d\" -f2)" ;;
+        mas\ *)    mas install "$(echo "$item" | grep -o '[0-9]\+$')" ;;
+        vscode\ *) code --install-extension "$(echo "$item" | cut -d\" -f2)" ;;
+        go\ *)     eval "$item" ;;
+    esac
+}
+
+process_brewfiles() {
+    local term="$1"; shift
+    local files=("$@")
+    local results=""
+
+
+    for file in "${files[@]}"; do
+        local items
+        items=$(extract_items "$file")
+
+        if [[ -n "$term" ]]; then
+            items=$(echo "$items" | grep -i "$term" || true)
+        fi
+
+        results+="$items"$'\n'
+    done
+
+    results=$(echo "$results" | sed '/^\s*$/d')
+    select_and_install "$results"
+}
+
+view_brewfile() {
+    local name="$1"
+    local file="$BREWFILE_DIR/$name.rb"
+
+    if [[ ! -f "$file" ]]; then
+        echo "Error: Brewfile '$name.rb' not found."
+        list_brewfiles
+        exit 1
+    fi
+
+    process_brewfiles "" "$file"
+}
+
+search_brewfiles() {
+    local term="$1"
+
+    if [[ -z "$term" ]]; then
+        echo "Search term required."
+        exit 1
+    fi
+
+    # Expand glob safely
+    local files=("$BREWFILE_DIR"/*.rb)
+
+    if [[ ${#files[@]} -eq 1 && ! -f "${files[0]}" ]]; then
+        echo "No Brewfiles found in $BREWFILE_DIR"
+        exit 1
+    fi
+
+    process_brewfiles "$term" "${files[@]}"
+}
+
+
+
+
+
+# --- Main dispatcher ---
+
+cmd="${1:-}"
+shift || true
+
+case "$cmd" in
+    list|ls) list_brewfiles ;;
+    install) install_brewfiles "$@" ;;
+    view|cat|show) view_brewfile "$1" ;;
+    search|find) search_brewfiles "$1" ;;
+    *) usage ;;
+esac
