@@ -71,6 +71,7 @@ hex() {
 
 # Use fzf to find dirs and cd into them
 zz() {
+    __ensure_commands fzf zoxide || return
     zoxide query -l | fzf | xargs z
 }
 
@@ -132,32 +133,35 @@ fi
 
 # Use ripgrep to find in files but pipe to fzf
 fif() {
-  if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
-  rm -f /tmp/rg-fzf-{r,f}
-  RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
-  INITIAL_QUERY="${*:-}"
-  fzf --ansi --disabled --query "$INITIAL_QUERY" \
-      --bind "start:reload:$RG_PREFIX {q}" \
-      --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
-      --bind 'ctrl-t:transform:[[ ! $FZF_PROMPT =~ ripgrep ]] &&
-        echo "rebind(change)+change-prompt(1. ripgrep> )+disable-search+transform-query:echo \{q} > /tmp/rg-fzf-f; cat /tmp/rg-fzf-r" ||
-        echo "unbind(change)+change-prompt(2. fzf> )+enable-search+transform-query:echo \{q} > /tmp/rg-fzf-r; cat /tmp/rg-fzf-f"' \
-      --color "hl:-1:underline,hl+:-1:underline:reverse" \
-      --prompt '1. ripgrep> ' \
-      --delimiter : \
-      --header 'CTRL-T: Switch between ripgrep/fzf' \
-      --preview 'bat --color=always {1} --highlight-line {2}' \
-      --preview-window 'border-left,+{2}+3/3,~3' \
-      --bind 'enter:become(vim {1} +{2})'
+    __ensure_commands rg fzf || return
+    if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
+    rm -f /tmp/rg-fzf-{r,f}
+    RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
+    INITIAL_QUERY="${*:-}"
+    fzf --ansi --disabled --query "$INITIAL_QUERY" \
+        --bind "start:reload:$RG_PREFIX {q}" \
+        --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
+        --bind 'ctrl-t:transform:[[ ! $FZF_PROMPT =~ ripgrep ]] &&
+            echo "rebind(change)+change-prompt(1. ripgrep> )+disable-search+transform-query:echo \{q} > /tmp/rg-fzf-f; cat /tmp/rg-fzf-r" ||
+            echo "unbind(change)+change-prompt(2. fzf> )+enable-search+transform-query:echo \{q} > /tmp/rg-fzf-r; cat /tmp/rg-fzf-f"' \
+        --color "hl:-1:underline,hl+:-1:underline:reverse" \
+        --prompt '1. ripgrep> ' \
+        --delimiter : \
+        --header 'CTRL-T: Switch between ripgrep/fzf' \
+        --preview 'bat --color=always {1} --highlight-line {2}' \
+        --preview-window 'border-left,+{2}+3/3,~3' \
+        --bind 'enter:become(vim {1} +{2})'
 }
 
 # Use fd to find files and pipe to fzf
 ff() {
+    __ensure_commands fd fzf || return
     fd . | fzf
 }
 
 # Use fd to find files with a given extension and pipe to fzf
 fext() {
+    __ensure_commands fd fzf || return
     [[ -n "$1" ]] || { echo "Usage: fext <ext>"; return 1; }
     fd -e "$1" | fzf
 }

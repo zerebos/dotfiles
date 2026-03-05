@@ -24,6 +24,7 @@ alias glog="git log --oneline"
 
 # Fuzzy find and show git stashes
 fstash() {
+    __ensure_commands git fzf || return
     git stash list --color=always --pretty="%C(brightblack)%gd %C(magenta)%h %>(14)%C(cyan)%cr %C(yellow)%gs" |
     fzf --ansi --no-sort --tiebreak=index --bind=ctrl-s:toggle-sort \
         --preview 'git stash show --color=always -p {1}' \
@@ -32,6 +33,7 @@ fstash() {
 
 # Fuzzy find and checkout git commits
 fshow() {
+    __ensure_commands git fzf || return
     git log --graph --color=always \
         --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
     fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \

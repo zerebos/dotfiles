@@ -7,7 +7,7 @@ alias hh='curl -sI'
 
 # Get a JSON response prettily
 curlj() {
-    if ! command -v jq &> /dev/null; then echo "Need jq to run this!"; return 1; fi
+    __ensure_commands curl jq || return 1
     curl -s "$@" | jq .
 }
 
@@ -28,12 +28,13 @@ serve() {
 
 # Get a random UUID
 uuid() {
-    if ! command -v bun &> /dev/null; then echo "Need bun to run this!"; return 1; fi
+    __ensure_commands bun || return 1
     bun -e "import { randomUUID } from \"node:crypto\"; console.log(randomUUID())"
 }
 
 # Pick a package.json script with fzf and run it with bun
 __pick_pkg_script() {
+    __ensure_commands jq fzf || return
     jq -r '.scripts | to_entries[] | "\(.key)\t\(.value)"' package.json \
         | fzf --with-nth=1 --delimiter="\t" --preview 'echo -e "\033[1mCommand:\033[0m {2}"'
 }
@@ -41,21 +42,21 @@ __pick_pkg_script() {
 
 # Run package.json script using bun (requires jq)
 rpkg() {
-    if ! command -v jq &> /dev/null; then echo "Need jq to run this!"; return 1; fi
+    __ensure_commands jq bun fzf || return
     local script=$(__pick_pkg_script) || return
     bun run "${script%%$'\t'*}"
 }
 
 # Run package.json script using bun with fzf previewing the command
 fpkg() {
-    if ! command -v jq &> /dev/null; then echo "Need jq to run this!"; return 1; fi
+    __ensure_commands jq bun fzf || return
     local script=$(__pick_pkg_script) || return
     print -z "bun run ${script%%$'\t'*}"
 }
 
 # List package.json scripts
 lspkg() {
-    if ! command -v jq &> /dev/null; then echo "Need jq to run this!"; return 1; fi
+    __ensure_commands jq || return
     {
         echo -e "\033[1mSCRIPT\tCOMMAND\033[0m";
         jq -r '.scripts | to_entries[] | "[\(.key)]\t\(.value)"' package.json;
@@ -70,12 +71,14 @@ lspkg() {
 
 # Run a go program (targets current dir by default)
 gor() {
+    __ensure_commands go || return
     local target="${1:-.}"
     go run "$target"
 }
 
 # Build a go program to ./bin (targets current dir by default)
 gob() {
+    __ensure_commands go || return
     mkdir -p bin
     local target="${1:-.}"
     go build -o bin/ "$target"
@@ -83,6 +86,7 @@ gob() {
 
 # Run a go test with fzf to select the test
 gotf() {
+    __ensure_commands fzf go || return
     local test
     test=$(go test -list . | grep -E '^Test' | fzf) || return
     go test -run "$test"
@@ -90,6 +94,7 @@ gotf() {
 
 # List all dependencies (both direct and indirect) with fzf
 gomodf() {
+    __ensure_commands fzf go || return
     go list -m all 2>/dev/null | fzf --preview 'go mod why {1}' --preview-window=wrap
 }
 
@@ -135,11 +140,13 @@ envcat() {
 
 # Search env vars with fzf
 fenv() {
+    __ensure_commands fzf || return
     printenv | fzf --query="$1"
 }
 
 # Search for a command in $PATH with fzf
 fcmd() {
+    __ensure_commands fzf || return
     local cmd
     cmd=$(print -l ${(ko)commands} | fzf --query="$1" --preview 'whence -a {}' --height=40% --border) || return
     print -z "$cmd"
@@ -147,6 +154,7 @@ fcmd() {
 
 # Search for an alias with fzf
 falias() {
+    __ensure_commands fzf || return
     local cmd
     cmd=$(alias | sed 's/=/\t/' | fzf --query="$1" --delimiter="\t" --with-nth=1 --preview 'echo -e "\033[1mAlias:\033[0m {1}\n\n\033[1mExpands to:\033[0m {2}"' --preview-window=up:3:wrap) || return
     print -z "${cmd%%$'\t'*}"
@@ -154,6 +162,7 @@ falias() {
 
 # Search for a brew with fzf
 fbrew() {
+    __ensure_commands brew fzf || return
     local cmd
     cmd=$(brew list | fzf --query="$1" --preview 'echo -e "\033[1mFormula/Cask:\033[0m {}\n"; HOMEBREW_COLOR=1 brew info {}' --border) || return
     print -z "$cmd"
@@ -167,50 +176,9 @@ fbrew() {
 
 alias hf="hyperfine"
 
-# TODO: these should move to a helper lib
-# Ensure a command exists, printing an error if it doesn't
-__ensure_commands() {
-    [[ $# -gt 0 ]] || { echo "Usage: __ensure_command <cmd> [...]"; return 1; }
-    local cmd
-    for cmd in "$@"; do
-        if ! command -v "$cmd" &>/dev/null; then
-            echo "Error: Command not found: $cmd"
-            return 1
-        fi
-    done
-}
-
-
-# Get and cache a remote resource to a local file and return the file path, re-downloading if it's older than a given age (default 7 days)
-__get_remote_resource() {
-
-    # Get the cache directory, preferring $ZSH_CACHE_DIR, then $XDG_CACHE_HOME, then ~/.cache/zsh
-    local cache_dir="${ZSH_CACHE_DIR:-${XDG_CACHE_HOME:+$XDG_CACHE_HOME/zsh}}"
-    cache_dir="${cache_dir:-$HOME/.cache/zsh}"
-
-    # Ensure the cache directory exists
-    if [[ ! -d "$cache_dir" ]]; then
-        mkdir -p "$cache_dir"
-    fi
-
-    local url="$1"
-    local filename=${2:-$(basename "$url")}
-    local max_age="${3:-7d}"
-    local cache_file="$cache_dir/$filename"
-
-    local days="${max_age%d}"
-    if [[ -f "$cache_file" ]]; then
-        if find "$cache_file" -mtime -"${days}" -print -quit | grep -q .; then
-            echo "$cache_file"
-            return 0
-        fi
-    fi
-    curl -sSL "$url" -o "$cache_file"
-    echo "$cache_file"
-}
-
 # emoji picker
 emoji() {
+    __ensure_commands fzf || return 1
     local url='https://git.io/JXXO7'
     local file=$(__get_remote_resource "$url" "emojis.txt" "30d")
     fzf < "$file"
@@ -219,7 +187,7 @@ emoji() {
 # TODO: consider using gitmoji-cli
 # gitmoji picker
 gitmoji() {
-    __ensure_commands jq || return 1
+    __ensure_commands jq fzf || return 1
     local url='https://raw.githubusercontent.com/carloscuesta/gitmoji/refs/heads/master/packages/gitmojis/src/gitmojis.json'
     local file="$(__get_remote_resource "$url" "gitmojis.json" "30d")"
 

@@ -16,6 +16,7 @@ fi
 
 # Cd to nearest git root
 cdg() {
+    __ensure_commands git || return
     local root
     root=$(git rev-parse --show-toplevel 2>/dev/null) || {
         echo "Not inside a git repository"
@@ -76,6 +77,7 @@ cdm() {
 
 # Cd to a directory selected with fzf, searching from current dir
 cdfz() {
+    __ensure_commands fd fzf || return
     local dir
     dir=$(fd -t d . | fzf) || return
     cd "$dir"
@@ -95,6 +97,7 @@ cdf() {
 
 # Alias for yazi to cd into dir on exit
 function yy() {
+    __ensure_commands yazi || return 1
     local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
     yazi "$@" --cwd-file="$tmp"
     if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then

@@ -34,6 +34,7 @@ ping() {
 
 # Pick a process to kill
 fkill() {
+    __ensure_commands fzf || return
     local pid
     pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}') || return
     echo "$pid" | xargs -r kill
