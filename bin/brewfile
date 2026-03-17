@@ -235,9 +235,9 @@ select_and_install() {
 
     case "$item" in
         brew\ *)   eval "$item" ;;
-        cask\ *)   brew install --cask "$(echo "$item" | cut -d\" -f2)" ;;
+        cask\ *)   brew install --cask "$(echo "$item" | cut -d' ' -f2)" ;;
         mas\ *)    mas install "$(echo "$item" | grep -o '[0-9]\+$')" ;;
-        vscode\ *) code --install-extension "$(echo "$item" | cut -d\" -f2)" ;;
+        vscode\ *) code --install-extension "$(echo "$item" | cut -d' ' -f2)" ;;
         go\ *)     eval "$item" ;;
     esac
 }

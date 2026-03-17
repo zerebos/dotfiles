@@ -1,3 +1,10 @@
+# Add paths to $PATH before setting up environment vars
+# so important binaries are discoverable via `command`.
+
+# Add important paths to $PATH/path the zsh way
+path+=( "$HOME/bin" "$HOME/.local/bin" "$HOME/go/bin" )
+typeset -U path # Enforce uniqueness
+
 # Setup some env vars
 if command -v flow &> /dev/null; then
     export EDITOR="flow"
@@ -11,10 +18,6 @@ export DELTA_PAGER="less --mouse" # Force mouse support in delta
 
 # Disable auto rebind for autosuggestion widgets (performance++)
 export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-
-# Add important paths to $PATH/path the zsh way
-path+=( "$HOME/bin" "$HOME/.local/bin" "$HOME/go/bin" )
-typeset -U path # Enforce uniqueness
 
 
 # Make the terminal title show the current directory when using Tabby terminal
