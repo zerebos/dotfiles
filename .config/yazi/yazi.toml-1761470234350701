@@ -1,6 +1,6 @@
-[mgr]
+[manager]
 show_hidden = true
-ratio = [2, 4, 4]
+ratio = [0, 4, 4]
 linemode = "size_and_mtime"
 title_format = "yazi@{cwd}"
 
