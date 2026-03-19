@@ -51,5 +51,7 @@ config.color_schemes = {
   },
 }
 
+config.enable_kitty_keyboard = true
+
 -- and finally, return the configuration to wezterm
 return config

@@ -1,0 +1,11 @@
+---
+extends: terminal-dark
+# default:
+footer:
+  style: progress_bar
+  character: "▁"
+execution_output:
+  colors:
+    background: "2E2D2E"
+  padding:
+    horizontal: 10
