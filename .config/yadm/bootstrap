@@ -34,6 +34,16 @@ if command -v yazi &> /dev/null; then
     ya pack -a ndtoan96/ouch
 fi
 
+# Install flow-control
+if command -v curl &> /dev/null; then
+    [[ -d ~/.local/bin ]] || mkdir -p ~/.local/bin
+    curl -fsSL -o ~/.local/bin/flow-control https://flow-control.dev/install
+    chmod +x ~/.local/bin/flow-control
+
+    # Pipe nothing to force through interactive checks
+    true | ~/.local/bin/flow-control -n -V -d ~/.local/bin
+fi
+
 # if locale-gen exists ensure our locale is okay
 if command -v locale-gen &>/dev/null; then
     if ! locale -a | grep -q "en_US.utf8"; then

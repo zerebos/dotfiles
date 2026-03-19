@@ -1,18 +1,25 @@
 .ssh/
+.gnupg/
+.agents/
 .antigravity-server/
 .battery/
 .cache/
 .cargo/
 .cisco/
 .copilot/
+.cursor/
+.cursor-server/
 .docker/
 .dotnet/
 .local/
 .vscode-server/
 .config/.vui/
+.config/.wrangler/
 .config/chromium
 .config/dconf
+.config/filezilla/
 .config/fontforge
+.config/gh/hosts.yml
 .config/GitHub Desktop/
 .config/GitKraken/
 .config/goto
@@ -26,6 +33,7 @@
 .config/yazi/package.toml
 .config/micro/buffers
 .config/micro/backups
+.config/wtf/log.txt
 .config/zsh/.zcompdump*
 .config/zsh/history
 .hyper_plugins/
@@ -39,7 +47,9 @@
 .rustup/
 .ServiceHub/
 .Trash/
+.vmodules/
 .waveterm/
+.zed_server/
 .git-credentials
 .bash_history
 .bash_logout
