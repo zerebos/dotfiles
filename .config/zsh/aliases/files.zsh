@@ -13,8 +13,10 @@ alias jj="jq ."
 # If eza is installed, use that instead of ls
 if command -v eza &> /dev/null; then
     alias ls="eza -h --icons --color=always --hyperlink"
+elif [[ "$OSTYPE" == darwin* ]]; then
+    alias ls="ls -Gh"  # macOS BSD ls: -G for color, -h for human-readable sizes
 else
-    alias ls="ls -h --color=always --hyperlink"
+    alias ls="ls -h --color=auto"
 fi
 
 # Replace cat and less with calls to bat
@@ -63,7 +65,7 @@ yaml() {
 hex() {
     [[ -f "$1" ]] || { echo "File not found: $1"; return 1; }
     if command -v hexdump &>/dev/null; then
-        hexdump . "$1"
+        hexdump -C "$1"
     else
         xxd "$1"
     fi
@@ -190,7 +192,7 @@ fsize() {
     DIR="$(realpath "$DIR")"
     echo "Getting size of $DIR"
     echo ""
-    du -hd 1 "$DIR" | sort -k 1 -n
+    du -hd 1 "$DIR" | sort -k1 -h
 }
 
 # Get detailed info about a file or directory
