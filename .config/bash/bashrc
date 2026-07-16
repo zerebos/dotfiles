@@ -1,0 +1,31 @@
+# ================= #
+# ZerebosSH (bash)  #
+# ================= #
+#
+# Full-featured bash port of the zsh setup, for when zsh isn't available.
+# Mirrors the structure of .config/zsh/.zshrc: load libraries, then plugins,
+# then aliases. Files inside each directory are sourced in filename order
+# (that's why the lib files carry numeric prefixes).
+
+BASH_CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
+
+# 1. Core libraries (utils, brew, completion, env, options)
+for __f in "$BASH_CONF_DIR"/lib/*.bash; do
+    [[ -r "$__f" ]] && source "$__f"
+done
+
+# 2. Plugins (prompt, suggestions, external tools)
+for __f in "$BASH_CONF_DIR"/plugins/*.bash; do
+    [[ -r "$__f" ]] && source "$__f"
+done
+
+# 3. Aliases and workflows
+for __f in "$BASH_CONF_DIR"/aliases/*.bash; do
+    [[ -r "$__f" ]] && source "$__f"
+done
+unset __f
+
+# Attach ble.sh last, if the suggestions plugin loaded it. ble.sh (inline
+# autosuggestions + syntax highlighting) must attach after everything else has
+# set up its keybindings.
+[[ -n "${BLE_VERSION-}" ]] && ble-attach

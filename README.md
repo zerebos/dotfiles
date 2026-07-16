@@ -152,11 +152,16 @@ Replacements for traditional Unix commands:
 ```
 dotfiles/
 ├── .config/
-│   ├── zsh/              # ZSH configuration
+│   ├── zsh/              # ZSH configuration (primary)
 │   │   ├── .zshrc        # Main config file
 │   │   ├── lib/          # Core libraries
 │   │   ├── aliases/      # Categorized aliases
 │   │   └── plugins/      # Plugin configurations
+│   ├── bash/             # Full bash port of the zsh setup (see below)
+│   │   ├── bashrc        # Main loader
+│   │   ├── lib/          # Core libraries
+│   │   ├── aliases/      # Categorized aliases
+│   │   └── plugins/      # Prompt, suggestions, external tools
 │   ├── yadm/             # YADM-specific configs
 │   │   ├── bootstrap     # Auto-setup script
 │   │   └── brewfiles/    # Homebrew bundles
@@ -168,7 +173,10 @@ dotfiles/
 │   ├── yazi/             # Yazi file manager config
 │   ├── micro/            # Micro editor config
 │   └── ...               # Other app configs
+├── slim/                 # Shareable "common base" for coworkers (bash + zsh)
 ├── bin/                  # Custom scripts
+├── .bashrc              # Bash entry point (sources .config/bash)
+├── .bash_profile        # Login-shell entry point (sources .bashrc)
 └── .zshenv               # ZSH environment setup
 ```
 
@@ -212,6 +220,46 @@ dotfiles/
 - `gdd` - Show disk usage
 - `btm` - Display system information
 - `listening` - Show open ports
+
+## 🐚 Bash Support
+
+While this setup is zsh-first, there is a full **bash port** under
+[`.config/bash/`](.config/bash/) for the times you're dropped into a machine
+without zsh. It mirrors the zsh layout (`lib/`, `plugins/`, `aliases/`) and
+ports as much as bash allows:
+
+- Same aliases and workflow functions (`gs`, `fshow`, `fif`, `x`/`c`, `mkcd`,
+  the Go/Node helpers, etc.)
+- fzf, zoxide, and direnv integration
+- Cached `brew shellenv`, XDG paths, history, and completion tuning
+- A git-aware prompt (uses [Starship](https://starship.rs/) if installed, with
+  a hand-rolled fallback) in place of Powerlevel10k
+- Inline autosuggestions + syntax highlighting via
+  [ble.sh](https://github.com/akinomyoga/ble.sh) when it's installed
+
+It loads through the top-level `.bashrc` (with `.bash_profile` sourcing it for
+login shells). Where a zsh feature has no bash equivalent, the closest
+practical substitute is used and noted in comments.
+
+## 🤝 A Slim Base to Share
+
+Want to hand a colleague a sane shell without the full setup? The
+[`slim/`](slim/) directory is a self-contained "common base" — a curated slice
+that's useful without being overwhelming, and that **never clones or installs
+anything behind your back**.
+
+- One file per shell: [`slim/base.bash`](slim/base.bash) and
+  [`slim/base.zsh`](slim/base.zsh)
+- Headline features: <kbd>Ctrl</kbd>+<kbd>R</kbd> fuzzy history (via fzf) and
+  history autosuggestions, plus a git-aware prompt, good history defaults, and
+  a tasteful alias set
+- Everything optional degrades gracefully; `slimhelp` shows what's active and
+  what to install next
+- A guided [`slim/README.md`](slim/README.md) and an idempotent
+  [`slim/install.sh`](slim/install.sh) make onboarding a one-liner
+
+Point someone at [`slim/`](slim/) and they can adopt it by adding a single
+`source` line to their rc.
 
 ## 🎨 Customization
 
@@ -347,4 +395,7 @@ Built with and inspired by:
 
 ---
 
-**Note**: This is a ZSH-specific configuration. While some tools and configs work across shells, the core shell configuration requires ZSH. Review and customize before using.
+**Note**: This is a ZSH-first configuration — the primary, most polished setup
+targets ZSH. A full bash port lives in [`.config/bash/`](.config/bash/), and a
+shareable common base for both shells lives in [`slim/`](slim/). Review and
+customize before using.
