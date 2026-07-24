@@ -2,7 +2,7 @@
 # so important binaries are discoverable via `command`.
 
 # Add important paths to $PATH/path the zsh way
-path+=( "$HOME/bin" "$HOME/.local/bin" "$HOME/go/bin" )
+path+=( "$HOME/bin" "$HOME/.local/bin" "$HOME/go/bin" "$HOME/.cargo/bin")
 typeset -U path # Enforce uniqueness
 
 # Setup some env vars
