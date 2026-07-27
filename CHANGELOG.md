@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Full **bash port** of the zsh setup under `.config/bash/`, mirroring the
+  `lib/` / `plugins/` / `aliases/` layout:
+  - Ported aliases and workflow functions (git, files, navigation, devtools,
+    containers, system) with bash-native equivalents where zsh idioms don't
+    translate (`print -z` → editable read, `path` array → dedup helper, etc.)
+  - Cached `brew shellenv`, XDG paths, history, and readline/completion tuning
+  - fzf / zoxide / direnv integration
+  - Git-aware prompt (Starship if present, hand-rolled fallback) and optional
+    ble.sh inline autosuggestions + syntax highlighting
+  - Top-level `.bashrc` / `.bash_profile` entry points (login-shell safe)
+- Shareable **slim common base** under `slim/` for onboarding coworkers:
+  - Self-contained `base.bash` and `base.zsh` (no background cloning/installing)
+  - Ctrl-R fuzzy history (fzf), history autosuggestions, git-aware prompt,
+    sensible history, and a curated alias set — all degrading gracefully
+  - `slimhelp` feature-status helper, idempotent `install.sh`, and a guided
+    walkthrough `README.md`
+
+### Changed
+- README documents bash support and the slim base; repo positioned as
+  "zsh-first" rather than "zsh-only"
+
 ## [2.1.0] - 2026-03-05
 
 ### Added
