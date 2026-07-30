@@ -72,9 +72,12 @@ sdo() {
     local cmd="$1"
     shift
 
-    case "$(type -t "$cmd")" in
+    local cmd_type
+    cmd_type=$(whence -w "$cmd" | cut -d' ' -f2)
+
+    case "$cmd_type" in
         function)
-            sudo zsh -c "$(printf '%s\n' "$(declare -f "$cmd")"; printf '%s "$@"\n' "$cmd")" zsh "$@"
+            sudo zsh -c "$(functions "$cmd"); $cmd \"\$@\"" zsh "$@"
             ;;
         alias)
             sudo zsh -ic "$cmd $*"

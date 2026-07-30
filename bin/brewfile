@@ -14,8 +14,13 @@ usage() {
 }
 
 list_brewfiles() {
+    local files=("$BREWFILE_DIR"/*.rb)
+    if [[ ${#files[@]} -eq 1 && ! -f "${files[0]}" ]]; then
+        echo "No Brewfiles found in $BREWFILE_DIR"
+        return 1
+    fi
     echo "Available Brewfiles:"
-    for f in "$BREWFILE_DIR"/*.rb; do
+    for f in "${files[@]}"; do
         basename "${f%.rb}"
     done
 }
@@ -54,7 +59,7 @@ install_brewfiles() {
 
         echo "Installing from: $file"
         if [[ "$dry_run" = true ]]; then
-            brew bundle --file="$file" --no-upgrade
+            brew bundle --file="$file" --dry-run
         else
             brew bundle --file="$file"
         fi
@@ -235,9 +240,9 @@ select_and_install() {
 
     case "$item" in
         brew\ *)   eval "$item" ;;
-        cask\ *)   brew install --cask "$(echo "$item" | cut -d' ' -f2)" ;;
+        cask\ *)   brew install --cask "$(echo "$item" | cut -d'"' -f2)" ;;
         mas\ *)    mas install "$(echo "$item" | grep -o '[0-9]\+$')" ;;
-        vscode\ *) code --install-extension "$(echo "$item" | cut -d' ' -f2)" ;;
+        vscode\ *) code --install-extension "$(echo "$item" | cut -d'"' -f2)" ;;
         go\ *)     eval "$item" ;;
     esac
 }
@@ -265,6 +270,13 @@ process_brewfiles() {
 
 view_brewfile() {
     local name="$1"
+
+    if [[ -z "$name" ]]; then
+        echo "Error: No Brewfile name specified."
+        list_brewfiles
+        exit 1
+    fi
+
     local file="$BREWFILE_DIR/$name.rb"
 
     if [[ ! -f "$file" ]]; then

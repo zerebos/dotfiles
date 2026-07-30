@@ -5,49 +5,58 @@ set -euo pipefail
 # Give yadm it's own easily accessible config and ignore
 yadm gitconfig include.path ~/.config/yadm/gitconfig
 
+exec_brew=false
+
 # Install homebrew if its missing
 if ! command -v brew &> /dev/null; then
     echo "Installing homebrew"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    if ! /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+        echo "Warning: Homebrew installation failed. Skipping brew-dependent steps."
+    fi
 fi
 
 # Have homebrew add itself to path if it installed
 if command -v brew &>/dev/null; then
     eval "$(brew shellenv)"
+    exec_brew=true
 fi
 
 
-if [[ -f ~/.config/yadm/brewfiles/essentials.rb ]]; then
+if [[ "${exec_brew:-false}" == true && -f ~/.config/yadm/brewfiles/essentials.rb ]]; then
     echo "Updating homebrew bundle"
-    brew bundle --file="$HOME/.config/yadm/brewfiles/essentials.rb"
+    brew bundle --file="$HOME/.config/yadm/brewfiles/essentials.rb" || \
+        echo "Warning: brew bundle exited with errors; some packages may not have installed."
 fi
 
 # If yazi was installed by brew then add the plugins too
 if command -v yazi &> /dev/null; then
     echo "Adding plugins to yazi"
-    ya pack -a yazi-rs/plugins:max-preview
-    ya pack -a yazi-rs/plugins:full-border
-    ya pack -a yazi-rs/plugins:git
-    ya pack -a KKV9/command
-    ya pack -a imsi32/yatline
-    ya pack -a imsi32/yatline-githead
-    ya pack -a ndtoan96/ouch
+    ya pack -a yazi-rs/plugins:max-preview  || echo "Warning: failed to install yazi plugin max-preview"
+    ya pack -a yazi-rs/plugins:full-border  || echo "Warning: failed to install yazi plugin full-border"
+    ya pack -a yazi-rs/plugins:git          || echo "Warning: failed to install yazi plugin git"
+    ya pack -a KKV9/command                 || echo "Warning: failed to install yazi plugin command"
+    ya pack -a imsi32/yatline               || echo "Warning: failed to install yazi plugin yatline"
+    ya pack -a imsi32/yatline-githead       || echo "Warning: failed to install yazi plugin yatline-githead"
+    ya pack -a ndtoan96/ouch                || echo "Warning: failed to install yazi plugin ouch"
 fi
 
 # Install flow-control
 if command -v curl &> /dev/null; then
     [[ -d ~/.local/bin ]] || mkdir -p ~/.local/bin
-    curl -fsSL -o ~/.local/bin/flow-control https://flow-control.dev/install
-    chmod +x ~/.local/bin/flow-control
-
-    # Pipe nothing to force through interactive checks
-    true | ~/.local/bin/flow-control -n -V -d ~/.local/bin
+    if curl -fsSL -o ~/.local/bin/flow-control https://flow-control.dev/install; then
+        chmod +x ~/.local/bin/flow-control
+        # Pipe nothing to force through interactive checks
+        true | ~/.local/bin/flow-control -n -V -d ~/.local/bin || \
+            echo "Warning: flow-control self-install step failed; binary is still available at ~/.local/bin/flow-control."
+    else
+        echo "Warning: Failed to download flow-control."
+    fi
 fi
 
 # if locale-gen exists ensure our locale is okay
 if command -v locale-gen &>/dev/null; then
     if ! locale -a | grep -q "en_US.utf8"; then
-        sudo locale-gen en_US.UTF-8
+        sudo locale-gen en_US.UTF-8 || echo "Warning: locale-gen failed."
     fi
 fi
 
